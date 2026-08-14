@@ -526,7 +526,7 @@
     <div class="nav-group">
       <div class="g-label">Govern — what may be used</div>
       <button class="nav-item" data-t="v-segments"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="7" height="7" rx="1"/><rect x="14" y="4" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Audience Definitions<span class="count">42</span></button>
-      <button class="nav-item" data-t="v-supersegments"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="8" cy="8" r="5"/><circle cx="16" cy="8" r="5"/><circle cx="12" cy="16" r="5"/></svg>Super Segments</button>
+      <button class="nav-item" data-t="v-supersegments"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="8" cy="8" r="5"/><circle cx="16" cy="8" r="5"/><circle cx="12" cy="16" r="5"/></svg>Unified Segments</button>
       <button class="nav-item" data-t="v-consent"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z"/></svg>Consent &amp; Eligibility</button>
       <button class="nav-item" data-t="v-access"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>Access (RBAC/ABAC)</button>
     </div>
@@ -621,7 +621,7 @@ const CUSTOMERS = {
       ['News ID','newsid','nid_88f2…','99.0','deterministic','var(--au)'],
       ['Permutive ID','puid','pmv_c31a…','96.4','deterministic','var(--uk)'],
       ['PPID (GAM)','ppid','ppid_hashedvxid','99.0','deterministic','var(--eu)'],
-      ['RampID','rampid','XY9f…','98.0','deterministic','var(--au)'],
+      ['RampID','rampid','not at tag layer — LiveRamp is placeholder spine','0','probabilistic','var(--danger)'],
       ['UID2.0','uid2','in progress FY25Q4','0','probabilistic','var(--danger)']
     ],
     segments:[['C-suite decision-makers','rt'],['Accredited investors','bt'],['HNW households','bt'],['Recently promoted','rt']],
@@ -629,7 +629,7 @@ const CUSTOMERS = {
       ['SF','Snowflake DEMOGRAPHIC_LOOKUP','UUID + VXID keys · 137 cols · Atlan sync','ok','Primary'],
       ['GAM','GAM Secure Signals','PPID + hashed email · TCF v2 / GPP consent','ok','Deterministic'],
       ['PMV','Permutive DMP','wraps VXID + News ID + LAL model','warn','Matched + Modelled'],
-      ['LR','LiveRamp','RampID · global verified','ok','Deterministic']
+      ['LR','LiveRamp','Placeholder spine only — RampID not live at tag layer today','warn','Not yet live']
     ],
     timeline:[
       ['02:14 today','Snowflake DEMOGRAPHIC_LOOKUP staged export (daily)'],
@@ -742,12 +742,12 @@ const CUSTOMERS = {
     identifiers:[
       ['VXID','vxid','f2e9-04ab (hashed)','100','deterministic','var(--us)'],
       ['Permutive ID','puid','pmv_04ab…','94.1','deterministic','var(--uk)'],
-      ['RampID','rampid','7Qk2…','96.5','deterministic','var(--au)']
+      ['RampID','rampid','not at tag layer — LiveRamp is placeholder spine','0','probabilistic','var(--danger)']
     ],
     segments:[['Accredited investors','bt'],['HNW households','bt']],
     lineage:[
       ['SF','Snowflake DEMOGRAPHIC_LOOKUP','row-level, keyed on VXID','ok','Primary'],
-      ['LR','LiveRamp','RampID resolved for cross-BU curation','ok','Deterministic']
+      ['LR','LiveRamp','Placeholder spine only — RampID not live at tag layer today','warn','Not yet live']
     ],
     timeline:[
       ['02:14 today','Row refreshed from DEMOGRAPHIC_LOOKUP staged export'],
@@ -851,14 +851,14 @@ const CUSTOMERS = {
       ['News ID','newsid','nid_a7f3…','98.4','deterministic','var(--au)'],
       ['Permutive ID','puid','pmv_91c2…','95.8','deterministic','var(--uk)'],
       ['PPID (GAM)','ppid','ppid_hashedvxid','98.0','deterministic','var(--eu)'],
-      ['RampID','rampid','XY9f…','97.2','deterministic','var(--au)']
+      ['RampID','rampid','not at tag layer — LiveRamp is placeholder spine','0','probabilistic','var(--danger)']
     ],
     segments:[['C-suite decision-makers','rt'],['Accredited investors','bt'],['Recently promoted','rt']],
     lineage:[
       ['SF','Snowflake DEMOGRAPHIC_LOOKUP','row-level, keyed on VXID · 137 cols','ok','Primary'],
       ['GAM','GAM Secure Signals','PPID passed on ad calls, TCF v2/GPP consent present','ok','Deterministic'],
       ['PMV','Permutive DMP','wraps VXID + News ID, C-suite audience membership','ok','Matched'],
-      ['LR','LiveRamp','RampID resolved for cross-BU curation','ok','Deterministic']
+      ['LR','LiveRamp','Placeholder spine only — RampID not live at tag layer today','warn','Not yet live']
     ],
     timeline:[
       ['02:14 today','Row refreshed from DEMOGRAPHIC_LOOKUP staged export'],
@@ -1295,14 +1295,16 @@ function updateSuperSegment(){
 
   let size, note, badge;
   if(type==='stitched'){
-    // Illustrative overlap estimate only — real cross-BU overlap is unverified per the requirements doc.
-    size = Math.round(Math.min(sumDJ,sumRE) * 0.06);
-    note = `Illustrative estimate — applies a 6% overlap assumption to the smaller side. The real deterministic overlap between Dow Jones and Realtor.com is still unverified per the requirements doc (never quote a real % externally).`;
-    badge = `<span class="lbl matched">Stitched — same person</span>`;
+    // Illustrative only. Andrew's own working assumption in the Aug 14 sync was
+    // "maybe across the world 10% of the data will be overlapped" — explicitly
+    // hedged as "maybe," not a verified figure. The deck calls this indicative.
+    size = Math.round(Math.min(sumDJ,sumRE) * 0.10);
+    note = `Illustrative estimate — applies a ~10% overlap assumption to the smaller side, Andrew's own hedged working guess from the Aug 14 sync ("maybe across the world 10%"). The deck is explicit: "the verified deterministic overlap between the two POC business units is still an open question" — never quote a real % externally.`;
+    badge = `<span class="lbl matched">Matched — same person</span>`;
   } else {
     size = Math.round((sumDJ + sumRE) * 0.97);
-    note = `No overlap required — different people from each BU, grouped because they meet the combined criteria. Light 3% illustrative dedup applied for display only.`;
-    badge = `<span class="lbl modelled">Cohort — different people</span>`;
+    note = `No match required — different people, each meeting the same definition. Far more numerous than Matched, but less attractive to buyers since there's no real overlap. Light 3% illustrative dedup applied for display only.`;
+    badge = `<span class="lbl modelled">Definitional — different people</span>`;
   }
 
   res.innerHTML = `
@@ -1421,6 +1423,9 @@ views['v-graph'] = () => {
 views['v-flow'] = () => `
   <div class="ph"><div><div class="kick">Identity · End-to-end flow</div><h1>Identity flow — what actually happens</h1>
   <p>Not a generic CDP diagram — this is the real path a record takes through Dow Jones's and Realtor.com's actual systems, then the ICL. Same 7 checkpoints, but each one names the real system doing the work.</p></div></div>
+
+  <div class="note lock" style="margin-bottom:14px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z"/></svg>
+  <span><b>The spine is a placeholder, not a decision.</b> LiveRamp is the working assumption for the licensed identity spine — Experian was evaluated and did not meet the bar, pending their retry. Neither BU actually carries RampID, ID5, or UID2 at the tag layer today. The identity partner locks between mid-September and mid-October — everything downstream of that date is provisional until then.</span></div>
 
   <div class="card" style="margin-bottom:14px">
     <div class="card-h"><div><div class="kick">Dow Jones path</div><h4>Snowflake → GAM/Permutive → ICL</h4></div></div>
@@ -1583,19 +1588,22 @@ views['v-segments'] = () => {
   </div>`;
 };
 
-/* ---- Super Segments — "Chinese menu" combinator ---- */
+/* ---- Unified Segments — "Chinese menu" combinator ----
+   Renamed from internal "super segment" shorthand to the decided
+   client-facing term "unified" per the Aug 14 2026 sync decision:
+   "Standardize unified terminology... to describe all super segments." */
 views['v-supersegments'] = () => `
-  <div class="ph"><div><div class="kick">Audiences · Combinator</div><h1>Super Segments</h1>
+  <div class="ph"><div><div class="kick">Audiences · Combinator</div><h1>Unified Segments</h1>
   <p>Pick segments from each BU and combine them into one Super Segment. Two distinct types, per Andrew's Aug 2026 review — pick the type that matches what you actually mean.</p></div></div>
 
   <div class="grid g-2" style="margin-bottom:14px">
     <div class="card">
-      <div class="card-h"><div><div class="kick">Type A</div><h4>Stitched Users</h4></div></div>
-      <p style="font-size:12px;color:var(--text-soft);margin:0">The <b>same person</b>, recognized across business units via the licensed spine — e.g. one person who is both a Dow Jones C-suite reader and a Realtor.com in-market mover.</p>
+      <div class="card-h"><div><div class="kick">Type A</div><h4>Matched</h4></div></div>
+      <p style="font-size:12px;color:var(--text-soft);margin:0">The <b>same person</b>, present in both business units and matched on the identity spine. Deterministic, gated on the licensed spine — attractive to buyers, but the overlap % is still unverified.</p>
     </div>
     <div class="card">
-      <div class="card-h"><div><div class="kick">Type B</div><h4>Cohort Grouping</h4></div></div>
-      <p style="font-size:12px;color:var(--text-soft);margin:0"><b>Different people</b> from different BUs, grouped under one label because they meet the same criteria — no overlap required. Andrew's example: <b>"high-net-worth football fans."</b></p>
+      <div class="card-h"><div><div class="kick">Type B</div><h4>Definitional</h4></div></div>
+      <p style="font-size:12px;color:var(--text-soft);margin:0"><b>Different people</b>, each meeting the same definition — no match needed. Far more numerous than Matched, but less attractive to buyers since there's no real overlap. Andrew's example: <b>"high-net-worth football fans."</b></p>
     </div>
   </div>
 
@@ -1615,8 +1623,8 @@ views['v-supersegments'] = () => `
     </div>
     <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border)">
       <div class="kick" style="font-size:10px;color:var(--text-faint);margin-bottom:8px">COMBINE AS</div>
-      <label style="margin-right:20px;font-size:12.5px"><input type="radio" name="ssType" value="stitched" checked onchange="updateSuperSegment()"> Stitched Users</label>
-      <label style="font-size:12.5px"><input type="radio" name="ssType" value="cohort" onchange="updateSuperSegment()"> Cohort Grouping</label>
+      <label style="margin-right:20px;font-size:12.5px"><input type="radio" name="ssType" value="stitched" checked onchange="updateSuperSegment()"> Matched</label>
+      <label style="font-size:12.5px"><input type="radio" name="ssType" value="cohort" onchange="updateSuperSegment()"> Definitional</label>
     </div>
   </div>
 
@@ -1686,6 +1694,16 @@ views['v-catalog'] = () => `
   <div class="filters"><span class="fchip active">All datasets</span><span class="fchip">Dow Jones</span><span class="fchip">Realtor.com</span><span class="fchip">NY Post</span><span class="fchip">News UK</span><span class="fchip">News Corp Australia</span><span class="fchip">Derived</span></div>
 
   <div class="card" style="margin-bottom:14px">
+    <div class="card-h"><div><div class="kick">Access reality, not aspiration</div><h4>What "ingestion" actually means today</h4></div></div>
+    <div class="arow"><span class="k">Dow Jones access level</span><span class="tag warn">Data-dump only — no read-only permission level exists in their lake</span></div>
+    <div class="arow"><span class="k">Realtor data dictionary</span><span class="tag ok">Passed from Yifang to his team Aug 11</span></div>
+    <div class="arow"><span class="k">Dow Jones ad-server log volume</span><span class="tag ok">38.3M events</span></div>
+    <div class="arow"><span class="k">Realtor's equivalent log</span><span class="tag bad">Dormant</span></div>
+    <div class="arow"><span class="k">Event schema</span><span class="tag ok">Both BUs run an identical 20-event schema — divergence lives at the cohort layer</span></div>
+    <div class="hint">Neither business unit is letting the layer directly into its systems — everything here arrives as a staged export, not a live query.</div>
+  </div>
+
+  <div class="card" style="margin-bottom:14px">
     <div class="card-h"><div><div class="kick">Dow Jones · Snowflake B2C_AUDIENCE_GOLD.SEGMENTS.DEMOGRAPHIC_LOOKUP</div><h4>137 columns · Atlan sync · all DRAFT, no owner set (real state)</h4></div><span class="tag ok">POC scope — column-level</span></div>
     <table><thead><tr><th>Column (real)</th><th>Type</th><th>Sensitivity tag (real)</th><th>Usage</th><th>Provenance</th></tr></thead><tbody>
       <tr><td class="idc">UUID / VXID</td><td>TEXT</td><td>—</td><td><span class="usage c1">C1</span></td><td class="idc">key columns</td></tr>
@@ -1712,9 +1730,9 @@ views['v-catalog'] = () => `
       <tr><td class="idc">networkimpressions / networkrequests</td><td>+ backfill variants · Jan 5–11 partitions</td><td><span class="usage c1">C1</span></td><td><span class="tag ok">Approved</span></td></tr>
       <tr><td class="idc">matchtableadunits / _companies / _lineitems</td><td>versioned GAM metadata through Jan 11</td><td><span class="usage c1">C1</span></td><td><span class="tag ok">Approved</span></td></tr>
       <tr><td><span class="idc" style="color:var(--text-faint)">excluded</span></td><td class="idc">bid-events, raw Consumer 360, lead/CRM, full listing dim</td><td><span class="usage c3">C3</span></td><td><span class="tag bad">Not in package</span></td></tr>
-      <tr><td><span class="idc" style="color:var(--text-faint)">no equivalent</span></td><td class="idc">num_bedrooms</td><td><span class="usage c3">C3</span></td><td><span class="tag bad">MLS restricted — cannot license</span></td></tr>
+      <tr><td><span class="idc" style="color:var(--text-faint)">no equivalent</span></td><td class="idc">num_bedrooms</td><td><span class="usage c3">C3</span></td><td><span class="tag warn">MLS forbids licensing — no system enforces it yet</span></td></tr>
     </tbody></table>
-    <div class="hint">Listing text goes through a 7-step sanitizer (strip emails/phones/URLs/agent names/MLS IDs/addresses, truncate 1,000 chars) — validated with zero rule matches remaining.</div>
+    <div class="hint">Listing text goes through a 7-step sanitizer (strip emails/phones/URLs/agent names/MLS IDs/addresses, truncate 1,000 chars) — validated with zero rule matches remaining. The bedrooms restriction is a contractual policy, not a technical control today — that gap is real, not hypothetical.</div>
   </div>
 
   <div class="card" style="margin-bottom:14px">
@@ -1735,7 +1753,7 @@ views['v-catalog'] = () => `
     <table><thead><tr><th>System (real)</th><th>Detail</th><th>Usage</th></tr></thead><tbody>
       <tr><td class="idc">BigQuery lakehouse</td><td>combines Permutive + GAM + Illuma contextual data</td><td><span class="usage c1">C1</span></td></tr>
       <tr><td class="idc">Nucleus</td><td>proprietary Discover/Plan/Measure insight platform</td><td><span class="usage c1">C1</span></td></tr>
-      <tr><td class="idc">Permutive</td><td>Super Segments spine — UK site, own CMP/TCF registration</td><td><span class="usage c2">C2</span></td></tr>
+      <tr><td class="idc">Permutive</td><td>Unified segment spine — UK site, own CMP/TCF registration</td><td><span class="usage c2">C2</span></td></tr>
     </tbody></table>
     <div class="hint">Column-level schema not yet documented in the discovery corpus — read-only Google Cloud access requested to explore actual datasets and query permissions.</div>
   </div>
@@ -1771,7 +1789,7 @@ views['v-connectors'] = () => {
   const conns = [
     ['GAM','Live · Secure Signals','ok'],['Permutive','Live · no API, batch','warn'],['Snowflake','Live · B2C_AUDIENCE_GOLD','ok'],
     ['Atlan','Live · DJ catalog sync','ok'],['Acryl / DataHub','Live · Realtor Snowflake','ok'],['AWS Glue/Athena','Live · Realtor GAM logs','ok'],
-    ['AWS S3','Live · rdc-media-public','ok'],['LiveRamp','Live · RampID','ok'],['The Trade Desk','In progress · UID2.0','warn'],
+    ['AWS S3','Live · rdc-media-public','ok'],['LiveRamp','Placeholder spine · Experian rejected, not tag-live','warn'],['The Trade Desk','In progress · UID2.0','warn'],
     ['Xandr Curate','Live · AAMP connector','ok'],['MS Curate','Live · AAMP connector','ok'],['InfoSum Beacon','Live · federated (WPP)','ok'],
     ['Google DV360','Certified buyer','ok'],['Yahoo DSP','Certified buyer','ok'],['DJCMP (Consent MW)','Live · consent sync','ok'],['MadConnect AWS grant','Blocked · no account ID','bad'],
     ['MCP Endpoint (seller-side)','Design stage · UC-F','warn'],['AdCP / IAB-Prebid standards','Draft · not yet published','mute']
@@ -1837,8 +1855,8 @@ views['v-reporting'] = () => {
     </div>`;
   }
   return `
-  <div class="ph"><div><div class="kick">Reporting · System-wide</div><h1>Overlap &amp; performance</h1>
-  <p>Standalone reporting, as its own surface rather than buried inside individual definitions — overlap between segments, and performance analytics across both POC business units.</p></div></div>
+  <div class="ph"><div><div class="kick">Reporting · System-wide · Cross-cutting</div><h1>Overlap &amp; performance</h1>
+  <p>Standalone reporting, as its own surface rather than buried inside individual definitions. Per the deck: this is one of <b>12 capabilities, not 9</b> — UX, Reporting, and Security cut across the Ingest/Govern/Activate flow rather than sitting inside any one stage of it.</p></div></div>
 
   <div class="card" style="margin-bottom:14px">
     <div class="card-h"><div><div class="kick">Overlap reporting</div><h4>Segment pairs, portfolio-wide</h4></div></div>
@@ -1882,6 +1900,11 @@ views['v-reporting'] = () => {
 views['v-consent'] = () => `
   <div class="ph"><div><div class="kick">Governance · Consent &amp; eligibility</div><h1>Consent &amp; eligibility</h1>
   <p>A consent field on every data line — for the POC: opted-out / not opted-out, United States. Each BU checks source eligibility against a written checklist; a region fence keeps out-of-geography records out of any audience.</p></div></div>
+
+  <div class="note lock" style="margin-bottom:14px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z"/></svg>
+  <span><b>This whole foundation is currently blocked.</b> Katie Le Ruez's privileged determination on controllership hasn't landed yet — and per the deck, that determination "blocks the consent foundation, which sits under all six use cases." Everything below is designed to support News Corp HQ's objective of not acting as a controller, but whether that objective is actually achieved is a determination for counsel, not for this console.</span></div>
+
+  <div class="hint" style="margin-bottom:14px">Two more real details: TCF enforces <i>vendor approval</i>, not <i>permitted use</i> — approval that a vendor exists on the list isn't approval for what they do with the data. And Dow Jones already collects consent today via a pixel dropped into their universal ad object — that's the real DJCMP mechanism below, not a placeholder.</div>
 
   <!-- LIVE APP: consent ledger -->
   <div class="card" style="margin-bottom:14px">
@@ -1951,7 +1974,7 @@ views['v-consent'] = () => `
 
   <div class="card" style="margin-bottom:14px">
     <div class="card-h"><div><div class="kick">Ownership model — who actually owns consent</div><h4>BUs own it. The ICL never does.</h4></div></div>
-    <p style="font-size:12.5px;color:var(--text-soft);margin:0 0 12px">This is the design constraint everything else here answers to. News Corp's own governance principle: <b>BUs own the consumer relationship and its consent — News Corp/the ICL should never have a direct connection to the consumer.</b> The precedent this has to match or beat is Permutive's Super Segments model — each BU contracts with Permutive independently, so News Corp is neither controller nor processor.</p>
+    <p style="font-size:12.5px;color:var(--text-soft);margin:0 0 12px">This is the design constraint everything else here answers to. News Corp's own governance principle: <b>BUs own the consumer relationship and its consent — News Corp/the ICL should never have a direct connection to the consumer.</b> The precedent this has to match or beat is Permutive's unified-segment model — each BU contracts with Permutive independently, so News Corp is neither controller nor processor.</p>
     <div class="grid g-2" style="margin-bottom:10px">
       <div>
         <div class="kick" style="font-size:10px;color:var(--text-faint);margin-bottom:6px">BU OWNS</div>
@@ -2056,10 +2079,11 @@ views['v-access'] = () => `
         <tr><td>Push destinations</td><td class="yes">anywhere</td><td class="no">—</td><td class="cond">limited</td></tr>
         <tr><td>Manage consent</td><td class="cond">cond.</td><td class="no">—</td><td class="no">—</td></tr>
       </tbody></table>
-      <div class="hint">Every action is attributable to a named actor (see Lifecycle &amp; Audit). Internal Viewer exists for News Corp/MadConnect stakeholders who need full visibility for review purposes without edit rights — distinct from Agency, which is a genuinely external, restricted view.</div>
+      <div class="hint">Every action is attributable to a named actor (see Lifecycle &amp; Audit). Internal Viewer exists for News Corp/MadConnect stakeholders who need full visibility for review purposes without edit rights — distinct from Agency, which is a genuinely external, restricted view. The requirements deck itself flags this: "two levels may not be enough — richer role separation is likely to be asked for." Yifang is the deck's own example of a Power User.</div>
     </div>
     <div class="card">
       <div class="card-h"><div><div class="kick">Attribute-based</div><h4>ABAC — contextual rules</h4></div></div>
+      <div class="rblock"><div class="rs">Precedence — conflict of fact, not definition</div><div class="rd">Real example: Dow Jones says a record is "family with kids," Realtor says the same person is "single" — these can't both be true. A BU can declare an override at audience creation (e.g. "Ye Fang can say use my data") — precedence resolves the attribute value, but says nothing about where the audience may be activated.</div></div>
       <div class="rblock"><div class="rs">Source-BU approval</div><div class="rd">A business unit's data cannot enter a cross-BU output until that BU approves it. The push is blocked otherwise.</div></div>
       <div class="rblock"><div class="rs">Minimum size + obfuscation</div><div class="rd">Every audience and reported cohort carries a minimum population threshold; external output carries source obfuscation and no raw PII.</div></div>
       <div class="rblock"><div class="rs">Status &amp; label gates</div><div class="rd">Insights-Only definitions are measurable but never activatable. Matched sells at a premium; Modelled is allowed to travel.</div></div>
@@ -2155,4 +2179,3 @@ go('v-search');
 </script>
 </body>
 </html>
-
