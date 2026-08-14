@@ -317,7 +317,7 @@
   }
   .nav-item svg{width:16px;height:16px;flex-shrink:0;stroke-width:1.8;}
   .nav-item:hover{background:var(--surface-2);color:var(--text);}
-  .nav-item.active{background:var(--primary-soft);color:#fff;}
+  .nav-item.active{background:var(--primary-soft);color:var(--primary);font-weight:600;}
   .nav-item.active::before{content:"";position:absolute;left:0;top:7px;bottom:7px;width:3px;border-radius:0 3px 3px 0;background:var(--primary);}
   .nav-item .count{margin-left:auto;font-family:'JetBrains Mono';font-size:10px;color:var(--text-faint);background:var(--bg);padding:1px 6px;border-radius:10px;}
 
@@ -730,12 +730,14 @@
     <div class="nav-group">
       <div class="g-label">Activate — what leaves</div>
       <button class="nav-item" data-t="v-activation"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>Activation</button>
+      <button class="nav-item" data-t="v-planningexport"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>Planning Export</button>
       <button class="nav-item" data-t="v-connectors"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 2l4 4-4 4M3 11V9a4 4 0 014-4h14M7 22l-4-4 4-4M21 13v2a4 4 0 01-4 4H3"/></svg>ICL Connectors</button>
       <button class="nav-item" data-t="v-planning"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>MCP Endpoints</button>
     </div>
     <div class="nav-group">
       <div class="g-label">Reporting</div>
-      <button class="nav-item" data-t="v-reporting"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 3v18h18M8 17V9m5 8V5m5 12v-6"/></svg>Overlap &amp; Performance</button>
+      <button class="nav-item" data-t="v-measurement"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 3v18h18M8 17V9m5 8V5m5 12v-6"/></svg>Measurement Enrichment</button>
+      <button class="nav-item" data-t="v-portfolio"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 3v18h18M8 17V9m5 8V5m5 12v-6"/></svg>Portfolio Analysis</button>
     </div>
     <div class="phase-foot">
       <div class="pf-h"><span class="pf-label">POC roadmap</span><span class="pf-badge">Design</span></div>
@@ -1873,18 +1875,6 @@ views['v-activation'] = () => `
     </div>
   </div>
 
-  <div class="card" id="planning-export-card" style="margin-bottom:14px;scroll-margin-top:20px">
-    <div class="card-h"><div><div class="kick">UC-D · Planning Export</div><h4>Q4_Cross_Property_Audience_Plan</h4></div><span class="tag ok">Ready to activate</span></div>
-    <div class="arow"><span class="k">Export name</span><span class="v mono">Q4_Cross_Property_Audience_Plan</span></div>
-    <div class="arow"><span class="k">Selected properties</span><span class="v">Dow Jones, Realtor</span></div>
-    <div class="arow"><span class="k">Audience size</span><span class="v mono">4,250,000 users</span></div>
-    <div class="arow"><span class="k">Destination</span><span class="v">Activation workspace</span></div>
-    <div class="arow"><span class="k">File format</span><span class="v">CSV</span></div>
-    <div class="arow"><span class="k">Validation status</span><span class="tag ok">Passed — min-size + source obfuscation checked</span></div>
-    <div class="arow"><span class="k">Last updated</span><span class="v mono">Aug 14, 2026 · 09:42</span></div>
-    <div style="margin-top:12px"><button class="btn" ${RBAC[state.role].activate?'':'disabled'}>Activate Audience</button></div>
-  </div>
-
   <div class="card">
     <div class="card-h"><div><div class="kick">Recent pushes</div><h4>Definition → destination</h4></div></div>
     <table><thead><tr><th>Definition</th><th>Destination class</th><th>Label</th><th>Status gate</th><th>Consent gate</th><th>Delivery</th></tr></thead><tbody>
@@ -2075,23 +2065,22 @@ views['v-planning'] = () => `
 
 /* ---- Consent & GDPR ---- */
 /* ---- Reporting — system-wide overlap + performance analytics ---- */
-views['v-reporting'] = () => {
+views['v-measurement'] = () => {
   if(!RBAC[state.role].internalReporting){
     return `
-    <div class="ph"><div><div class="kick">Reporting · System-wide</div><h1>Reporting</h1></div></div>
+    <div class="ph"><div><div class="kick">Reporting</div><h1>Measurement Enrichment</h1></div></div>
     <div class="card">
       <div class="card-h"><div><div class="kick">Restricted</div><h4>Internal reporting is not visible at this tier</h4></div></div>
       <div class="hint" style="margin:0">Agency (external viewing) can read, size and buy inside the existing taxonomy — but this reporting layer is internal-only. Switch Tier to Power User or Internal Viewer (top-right) to see this screen.</div>
     </div>`;
   }
   return `
-  <div class="ph"><div><div class="kick">Reporting · System-wide · Cross-cutting</div><h1>Reporting</h1>
-  <p>Per the deck: this is one of <b>12 capabilities, not 9</b> — UX, Reporting, and Security cut across the Ingest/Govern/Activate flow rather than sitting inside any one stage of it.</p></div></div>
+  <div class="ph"><div><div class="kick">Reporting · UC-A · Priority · Leads Insight</div><h1>Measurement Enrichment</h1>
+  <p>Advertiser sends a measurement file. It comes back enriched with untargeted key-value signal — joined on the campaign, not identity, so no user-level match is needed.</p></div></div>
 
-  <div class="card" style="margin-bottom:14px">
-    <div class="card-h"><div><div class="kick">UC-A · Priority · Leads Insight</div><h4>Measurement Enrichment</h4></div>
+  <div class="card">
+    <div class="card-h"><div><div class="kick">Mock</div><h4>Expected result after enrichment</h4></div>
       <a class="link" href="#" onclick="document.getElementById('uc-a').style.display=document.getElementById('uc-a').style.display==='none'?'block':'none';return false">See mock ▾</a></div>
-    <p style="font-size:12.5px;color:var(--text-soft);margin:0">Advertiser sends a measurement file. It comes back enriched with untargeted key-value signal — joined on the campaign, not identity, so no user-level match is needed.</p>
     <div id="uc-a" style="display:none;margin-top:14px;padding:14px;background:var(--surface-2);border-radius:8px;transition:all .22s ease">
       <div style="border:1.5px dashed var(--border);border-radius:10px;padding:18px;text-align:center;color:var(--text-soft);font-size:12.5px;margin-bottom:14px">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="width:22px;height:22px;margin-bottom:8px;color:var(--text-faint)"><path d="M12 3v12M7 10l5 5 5-5M4 21h16"/></svg><br>
@@ -2107,12 +2096,25 @@ views['v-reporting'] = () => {
       </tbody></table>
       <div class="hint">Expected result after the uploaded measurement file is enriched. Output is aggregate — rows are not additive.</div>
     </div>
-  </div>
+  </div>`;
+};
 
-  <div class="card" style="margin-bottom:14px">
-    <div class="card-h"><div><div class="kick">UC-B · Priority · Leads Insight, supports One meaning</div><h4>Portfolio Analysis</h4></div>
+views['v-portfolio'] = () => {
+  if(!RBAC[state.role].internalReporting){
+    return `
+    <div class="ph"><div><div class="kick">Reporting</div><h1>Portfolio Analysis</h1></div></div>
+    <div class="card">
+      <div class="card-h"><div><div class="kick">Restricted</div><h4>Internal reporting is not visible at this tier</h4></div></div>
+      <div class="hint" style="margin:0">Agency (external viewing) can read, size and buy inside the existing taxonomy — but this reporting layer is internal-only. Switch Tier to Power User or Internal Viewer (top-right) to see this screen.</div>
+    </div>`;
+  }
+  return `
+  <div class="ph"><div><div class="kick">Reporting · UC-B · Priority · Leads Insight, supports One meaning</div><h1>Portfolio Analysis</h1>
+  <p>Same engine as Measurement Enrichment, run across both BUs with no advertiser file — a portfolio answer instead of a campaign answer.</p></div></div>
+
+  <div class="card">
+    <div class="card-h"><div><div class="kick">Mock</div><h4>Reach by portfolio</h4></div>
       <a class="link" href="#" onclick="document.getElementById('uc-b').style.display=document.getElementById('uc-b').style.display==='none'?'block':'none';return false">See mock ▾</a></div>
-    <p style="font-size:12.5px;color:var(--text-soft);margin:0">Same engine as UC-A, run across both BUs with no advertiser file — a portfolio answer instead of a campaign answer.</p>
     <div id="uc-b" style="display:none;margin-top:14px;padding:14px;background:var(--surface-2);border-radius:8px;transition:all .22s ease">
       <table style="font-size:12px"><thead><tr><th>Portfolio</th><th>Audience</th><th style="text-align:right">Reach</th><th>Status</th></tr></thead><tbody>
         <tr><td>Dow Jones</td><td>Financial Decision-Makers</td><td style="text-align:right" class="mono">8,420,000</td><td><span class="tag ok">Available</span></td></tr>
@@ -2122,19 +2124,24 @@ views['v-reporting'] = () => {
       </tbody></table>
       <div class="hint">No numeric value is shown for a suppressed audience. Source and window stated on every figure.</div>
     </div>
-  </div>
-
-  <div class="card">
-    <div class="card-h"><div><div class="kick">UC-D · Priority · Leads Custody</div><h4>Planning Export</h4></div></div>
-    <div class="arow"><span class="k">Export name</span><span class="v mono">Q4_Cross_Property_Audience_Plan</span></div>
-    <div class="arow"><span class="k">Properties</span><span class="v">Dow Jones, Realtor</span></div>
-    <div class="arow"><span class="k">Selected audience</span><span class="v mono">4,250,000 users</span></div>
-    <div class="arow"><span class="k">Format</span><span class="v">CSV</span></div>
-    <div class="arow"><span class="k">Destination</span><span class="v">Activation workspace</span></div>
-    <div class="arow"><span class="k">Status</span><span class="tag ok">Ready to activate</span></div>
-    <div style="margin-top:12px"><button class="btn" onclick="go('v-activation');setTimeout(()=>{const el=document.getElementById('planning-export-card');if(el)el.scrollIntoView({behavior:'smooth',block:'center'});},60)">Open Activation →</button></div>
   </div>`;
 };
+
+views['v-planningexport'] = () => `
+  <div class="ph"><div><div class="kick">Activate · What leaves · UC-D · Priority · Leads Custody</div><h1>Planning Export</h1>
+  <p>Portfolio data exported to a clean room for planning and overlap analysis. Federated — processing happens inside the agency's environment, nothing rests outside it.</p></div></div>
+
+  <div class="card" id="planning-export-card">
+    <div class="card-h"><div><div class="kick">Q4_Cross_Property_Audience_Plan</div><h4>Export detail</h4></div><span class="tag ok">Ready to activate</span></div>
+    <div class="arow"><span class="k">Export name</span><span class="v mono">Q4_Cross_Property_Audience_Plan</span></div>
+    <div class="arow"><span class="k">Selected properties</span><span class="v">Dow Jones, Realtor</span></div>
+    <div class="arow"><span class="k">Audience size</span><span class="v mono">4,250,000 users</span></div>
+    <div class="arow"><span class="k">Destination</span><span class="v">Activation workspace</span></div>
+    <div class="arow"><span class="k">File format</span><span class="v">CSV</span></div>
+    <div class="arow"><span class="k">Validation status</span><span class="tag ok">Passed — min-size + source obfuscation checked</span></div>
+    <div class="arow"><span class="k">Last updated</span><span class="v mono">Aug 14, 2026 · 09:42</span></div>
+    <div style="margin-top:12px"><button class="btn" ${RBAC[state.role].activate?'':'disabled'}>Activate Audience</button></div>
+  </div>`;
 
 views['v-consent'] = () => `
   <div class="ph"><div><div class="kick">Governance · Consent &amp; eligibility</div><h1>Consent &amp; eligibility</h1>
