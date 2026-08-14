@@ -246,6 +246,28 @@
 
   /* attribute rows */
   .arow{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border-soft);}
+  .prov-row{border-bottom:none;padding-bottom:2px;}
+  .prov-line{padding:0 0 8px;border-bottom:1px solid var(--border-soft);}
+  .prov{font-family:'JetBrains Mono';font-size:9.5px;padding:2px 7px;border-radius:5px;display:inline-block;}
+  .prov.native{background:var(--success-soft);color:var(--success);}
+  .prov.appended{background:var(--ai-soft);color:var(--ai);}
+  .cov-bar{height:8px;background:var(--surface-3);border-radius:5px;overflow:hidden;}
+  .cov-fill{height:100%;background:linear-gradient(90deg,var(--success),var(--primary));border-radius:5px;}
+  .ss-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border-soft);font-size:12.5px;cursor:pointer;}
+  .ss-row span:nth-child(2){flex:1;}
+  .ss-row input[type=checkbox]{width:15px;height:15px;accent-color:var(--primary);cursor:pointer;}
+  .notif-wrap{position:relative;}
+  .notif-dot{position:absolute;top:5px;right:5px;width:7px;height:7px;border-radius:50%;background:var(--danger);border:1.5px solid var(--bg);}
+  .notif-panel{display:none;position:absolute;top:calc(100% + 8px);right:0;width:340px;max-height:420px;overflow-y:auto;background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:0 12px 32px rgba(0,0,0,.25);z-index:50;padding:8px 0;}
+  .notif-panel.show{display:block;}
+  .notif-h{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;font-weight:600;font-size:12.5px;border-bottom:1px solid var(--border-soft);}
+  .notif-settings{display:none;padding:4px 14px 10px;border-bottom:1px solid var(--border-soft);}
+  .notif-settings.show{display:block;}
+  .notif-item{display:flex;gap:10px;align-items:flex-start;padding:10px 14px;font-size:12px;color:var(--text-soft);border-bottom:1px solid var(--border-soft);}
+  .notif-item:last-child{border-bottom:none;}
+  .notif-item .dot{margin-top:4px;flex-shrink:0;}
+  .notif-item b{color:var(--text);}
+  .notif-t{font-size:10px;color:var(--text-faint);margin-top:2px;font-family:'JetBrains Mono';}
   .arow:last-child{border-bottom:none;}
   .arow .k{color:var(--text-soft);font-size:12.5px;}
   .arow .v{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:500;}
@@ -462,6 +484,23 @@
         </div>
         <div class="seg"><span class="live-dot"></span></div>
       </div>
+      <div class="notif-wrap">
+        <button class="theme-toggle" id="notifBell" onclick="toggleNotifs()" title="Notifications">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+          <span class="notif-dot"></span>
+        </button>
+        <div class="notif-panel" id="notifPanel">
+          <div class="notif-h">Notifications<a href="#" onclick="document.getElementById('notifSettings').classList.toggle('show');return false" class="link" style="font-size:10.5px">Settings</a></div>
+          <div id="notifSettings" class="notif-settings">
+            <div class="arow"><span class="k" style="font-size:11.5px">Email alerts</span><label class="toggle"><input type="checkbox" checked><span class="slider"></span></label></div>
+            <div class="arow"><span class="k" style="font-size:11.5px">Web push</span><label class="toggle"><input type="checkbox" checked><span class="slider"></span></label></div>
+          </div>
+          <div class="notif-item"><span class="dot ok"></span><div><b>C-suite decision-makers v3</b> is ready — 600K portfolio, 3 destinations synced<div class="notif-t">4 min ago</div></div></div>
+          <div class="notif-item"><span class="dot warn"></span><div><b>High-net-worth households</b> re-evaluated — size changed 88K → 96K on Realtor<div class="notif-t">1 hr ago</div></div></div>
+          <div class="notif-item"><span class="dot bad"></span><div>DSAR-2026-0403 <b>stalled</b> — Xandr confirmation missing<div class="notif-t">3 hrs ago</div></div></div>
+          <div class="notif-item"><span class="dot ok"></span><div><b>Small-business owners v4</b> definition change approved by Dow Jones<div class="notif-t">Yesterday</div></div></div>
+        </div>
+      </div>
       <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Toggle light / dark">
         <svg class="ico-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z"/></svg>
         <svg class="ico-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5L19 19M19 5l-1.5 1.5M6.5 17.5L5 19"/></svg>
@@ -486,6 +525,7 @@
     <div class="nav-group">
       <div class="g-label">Govern — what may be used</div>
       <button class="nav-item" data-t="v-segments"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="7" height="7" rx="1"/><rect x="14" y="4" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Audience Definitions<span class="count">42</span></button>
+      <button class="nav-item" data-t="v-supersegments"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="8" cy="8" r="5"/><circle cx="16" cy="8" r="5"/><circle cx="12" cy="16" r="5"/></svg>Super Segments</button>
       <button class="nav-item" data-t="v-consent"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z"/></svg>Consent &amp; Eligibility</button>
       <button class="nav-item" data-t="v-access"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>Access (RBAC/ABAC)</button>
     </div>
@@ -493,6 +533,10 @@
       <div class="g-label">Activate — what leaves</div>
       <button class="nav-item" data-t="v-activation"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>Activation</button>
       <button class="nav-item" data-t="v-connectors"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 2l4 4-4 4M3 11V9a4 4 0 014-4h14M7 22l-4-4 4-4M21 13v2a4 4 0 01-4 4H3"/></svg>ICL Connectors</button>
+    </div>
+    <div class="nav-group">
+      <div class="g-label">Reporting</div>
+      <button class="nav-item" data-t="v-reporting"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 3v18h18M8 17V9m5 8V5m5 12v-6"/></svg>Overlap &amp; Performance</button>
     </div>
     <div class="phase-foot">
       <div class="pf-h"><span class="pf-label">POC roadmap</span><span class="pf-badge">Design</span></div>
@@ -775,12 +819,12 @@ const CUSTOMERS = {
     ]
   },
 
-  /* ---- Named sample customers — one per BU, for a friendlier walkthrough.
-     Same complete profile structure as the pseudonymous rows above;
-     display name is illustrative/fictional, the underlying VXID/vst,
-     schema fields and lineage are the same real ones used elsewhere. */
+  /* ---- Sample records — pure identifier labels, no names.
+     Per the Aug 2026 UX review (Andrew): "even if the system holds
+     individual names, the UI must never betray that specific individual's
+     identity" — display is spine key / identifier only, never a person's name. */
   dj_named: {
-    initials:'JE', name:'Jordan Ellis', master:'VXID a7f3-91c2 (hashed)', loyalty:'DEMOGRAPHIC_LOOKUP row',
+    initials:'DJ', name:'VXID · a7f3-91c2', master:'VXID a7f3-91c2 (hashed)', loyalty:'DEMOGRAPHIC_LOOKUP row',
     home:'DJ', updated:'02:14 today', quality:96,
     tags:[['us','WSJ · subscriber since 2019'],['ok','Matched · C-suite'],['mute','Sample customer']],
     attrs:{
@@ -824,7 +868,7 @@ const CUSTOMERS = {
     ]
   },
   realtor_named: {
-    initials:'MR', name:'Morgan Reyes', master:'vst 8827-c31a → adjusted_uu_id', loyalty:'clickstream_pages row',
+    initials:'RE', name:'vst · 8827-c31a', master:'vst 8827-c31a → adjusted_uu_id', loyalty:'clickstream_pages row',
     home:'Realtor', updated:'Jan 12 partition', quality:88,
     tags:[['us','RDC visitor · active shopper'],['ok','Matched · In-market mover'],['mute','Sample customer']],
     attrs:{
@@ -868,7 +912,7 @@ const CUSTOMERS = {
      below). Realtor-side identifiers are the real ones captured in a live
      browser session (HAR): permutive-id, __vst, Adobe ECID, Prebid TDID. */
   cross_bu: {
-    initials:'JC', name:'Jamie Chen', master:'Licensed spine · union match', loyalty:'Cross-BU · US',
+    initials:'XB', name:'Spine · fe21ac28 (cross-BU)', master:'Licensed spine · union match', loyalty:'Cross-BU · US',
     home:'Dow Jones + Realtor.com', updated:'Aug 8 partition', quality:91, crossType:'bu',
     tags:[['us','Cross-BU · both US'],['ok','Common — expected overlap'],['mute','Union match, deterministic']],
     attrs:{
@@ -922,7 +966,7 @@ const CUSTOMERS = {
      corpus yet (see Data Catalog), so its identifiers below are marked
      illustrative, not verified real exports like the DJ/Realtor side. */
   cross_region: {
-    initials:'AR', name:'Aiden Rourke', master:'No licensed cross-region stitch', loyalty:'Cross-region · blocked',
+    initials:'XR', name:'Spine · b81c-22fa (cross-region)', master:'No licensed cross-region stitch', loyalty:'Cross-region · blocked',
     home:'Dow Jones (US) + News Corp Australia', updated:'not resolved', quality:0, crossType:'region',
     tags:[['bad','Cross-region · US ↔ AU'],['warn','Rare — Phase 2, out of scope'],['mute','No union match today']],
     attrs:{
@@ -1011,7 +1055,7 @@ views['v-search'] = () => `
   <div class="chip-group">
     <div class="chip-group-label">Dow Jones</div>
     <div class="chips">
-      <button class="chip" onclick="openProfile('dj_named')">Jordan Ellis · sample customer</button>
+      <button class="chip" onclick="openProfile('dj_named')">VXID a7f3-91c2 · sample record</button>
       <button class="chip" onclick="openProfile('dj')">Dow Jones overview</button>
       <button class="chip" onclick="openProfile('dj_exec')">VXID a7f3-91c2</button>
       <button class="chip" onclick="openProfile('dj_investor')">VXID f2e9-04ab</button>
@@ -1020,7 +1064,7 @@ views['v-search'] = () => `
   <div class="chip-group">
     <div class="chip-group-label">Realtor.com</div>
     <div class="chips">
-      <button class="chip" onclick="openProfile('realtor_named')">Morgan Reyes · sample customer</button>
+      <button class="chip" onclick="openProfile('realtor_named')">vst 8827-c31a · sample record</button>
       <button class="chip" onclick="openProfile('realtor')">Realtor.com overview</button>
       <button class="chip" onclick="openProfile('realtor_mover')">vst 8827-c31a</button>
       <button class="chip" onclick="openProfile('realtor_hnw')">vst 5f01-e9d2</button>
@@ -1029,13 +1073,13 @@ views['v-search'] = () => `
   <div class="chip-group">
     <div class="chip-group-label" style="color:var(--success)">Cross-BU (US) — common, expected overlap</div>
     <div class="chips">
-      <button class="chip" style="border-color:rgba(56,211,154,.4);color:var(--success)" onclick="openProfile('cross_bu')">Jamie Chen · Dow Jones + Realtor.com</button>
+      <button class="chip" style="border-color:rgba(56,211,154,.4);color:var(--success)" onclick="openProfile('cross_bu')">Spine · fe21ac28 · Dow Jones + Realtor.com</button>
     </div>
   </div>
   <div class="chip-group">
     <div class="chip-group-label" style="color:var(--danger)">Cross-region (US ↔ Australia) — rare, Phase 2</div>
     <div class="chips">
-      <button class="chip" style="border-color:rgba(242,109,109,.4);color:var(--danger)" onclick="openProfile('cross_region')">Aiden Rourke · Dow Jones (US) + News Corp Australia</button>
+      <button class="chip" style="border-color:rgba(242,109,109,.4);color:var(--danger)" onclick="openProfile('cross_region')">Spine · b81c-22fa · Dow Jones (US) + News Corp Australia</button>
     </div>
   </div>
 
@@ -1054,7 +1098,18 @@ function renderProfile(){
   const perms = RBAC[state.role];
   const manage = canManage(c.home);
 
-  // attribute groups
+  // Third-party appended fields, per the real WSJ x TransUnion lattice —
+  // everything else is treated as native BU data for provenance display.
+  const APPENDED_FIELDS = ['NET_WORTH','ACCREDITED_INVESTOR','INVESTABLE_ASSETS','MATCH_CONFIDENCE','CAREER_MATCH_CONFIDENCE','INVESTABLE_ASSETS_RANGE'];
+  function provenanceTag(k, reg){
+    const isAppended = APPENDED_FIELDS.some(f => k.toUpperCase().includes(f));
+    return isAppended
+      ? `<span class="prov appended" title="Third-party appended, not collected by the BU directly">Appended · TransUnion lattice</span>`
+      : `<span class="prov native" title="Collected directly by the business unit">Native · ${reg}</span>`;
+  }
+
+  // attribute groups — Attributes & Source Lineage, merged per Andrew's 3-part spec:
+  // provenance lives inline on every row, not in a separate card.
   let attrHtml = '';
   for(const grp in c.attrs){
     attrHtml += `<div class="agrp-t">${grp}</div>`;
@@ -1063,8 +1118,9 @@ function renderProfile(){
       const val = visible
         ? `<span>${v}</span>`
         : `<span class="masked">•••••••</span><span class="lockmini"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>${reg}-only</span>`;
-      attrHtml += `<div class="arow"><span class="k">${k}</span>
-        <span class="v"><span class="usage ${usage}">${usage.toUpperCase()}</span>${val}</span></div>`;
+      attrHtml += `<div class="arow prov-row"><span class="k">${k}</span>
+        <span class="v"><span class="usage ${usage}">${usage.toUpperCase()}</span>${val}</span></div>
+        <div class="prov-line">${provenanceTag(k, reg)}</div>`;
     }
   }
 
@@ -1088,6 +1144,9 @@ function renderProfile(){
       <div class="nm"><div class="name">${nm} <span class="ns">ns: ${ns}</span></div><div class="val">${val}</div></div>
       <div><div class="conf" style="color:${good?'var(--success)':'var(--warn)'}">${cf}%</div><div style="text-align:right;margin-top:2px"><span class="lbl ${lab}">${lab==='matched'?'Matched':'Modelled'}</span></div></div></div>`;
   }).join('');
+  // Coverage — % of identity slots that are deterministic vs probabilistic
+  const detCount = c.identifiers.filter(id => id[4]==='deterministic').length;
+  const coveragePct = Math.round(detCount / c.identifiers.length * 100);
   const lineage = c.lineage.map(([s,n,d,st,tag])=>`<div class="lrow"><span class="lsys">${s}</span>
     <div class="lm"><div class="name">${n}</div><div class="ls">${d}</div></div><span class="tag ${st==='ok'?'ok':st==='warn'?'warn':'bad'}">${tag}</span></div>`).join('');
   const tl = c.timeline.map(([t,d])=>`<div class="tli"><div class="t">${t}</div><div class="d">${d}</div></div>`).join('');
@@ -1112,14 +1171,34 @@ function renderProfile(){
       <div class="ptags">${tags}<span class="tag ok"><span class="dot ok"></span>Match ${c.quality}%</span></div>
     </div>
 
+    <!-- SECTION 1 — Keys (Linked Identifiers) -->
+    <div class="card" style="margin-bottom:14px">
+      <div class="card-h"><div><div class="kick">1 · Keys</div><h4>Linked identifiers</h4></div>
+        <a class="link" href="#" onclick="go('v-graph');return false">Open graph →</a></div>
+      <div class="cov-bar">
+        <div class="cov-fill" style="width:${coveragePct}%"></div>
+      </div>
+      <div class="hint" style="margin-top:6px">${detCount} of ${c.identifiers.length} identifiers deterministic (${coveragePct}% coverage) · ${c.identifiers.length} of 50 identity slots used</div>
+      ${nodes}
+    </div>
+
+    <!-- SECTION 2 — Attributes & Source Lineage (merged, inline provenance) -->
     <div class="grid g-2-3" style="margin-bottom:14px">
       <div class="card">
-        <div class="card-h"><div><div class="kick">Consumable data · via ICL (zero-copy)</div><h4>Attribute profile</h4></div><span class="mono" style="font-size:10px;color:var(--text-faint)">${viewerLabel()}</span></div>
+        <div class="card-h"><div><div class="kick">2 · Attributes &amp; Source Lineage</div><h4>Profile attributes, with provenance inline</h4></div><span class="mono" style="font-size:10px;color:var(--text-faint)">${viewerLabel()}</span></div>
         ${attrHtml}
         ${manageBar}
       </div>
       <div class="card">
-        <div class="card-h"><div><div class="kick">Audience</div><h4>Segments attached</h4></div></div>
+        <div class="card-h"><div><div class="kick">Map · Match · Merge</div><h4>System-level lineage</h4></div><a class="link" href="#" onclick="go('v-catalog');return false">Catalog →</a></div>
+        ${lineage}
+      </div>
+    </div>
+
+    <!-- SECTION 3 — Segments & Activation Status -->
+    <div class="grid g-2-3" style="margin-bottom:14px">
+      <div class="card">
+        <div class="card-h"><div><div class="kick">3 · Segments &amp; Activation</div><h4>Cohort membership</h4></div></div>
         ${segs}
         <div class="hint">RT = real-time re-scored · Batch = nightly/weekly refresh</div>
         <div style="margin-top:14px" class="card-h"><div><div class="kick">Pipeline</div><h4>Activation status</h4></div></div>
@@ -1127,24 +1206,13 @@ function renderProfile(){
         <div class="arow"><span class="k">Xandr / MS Curate</span><span class="v"><span class="dot ok"></span>Synced</span></div>
         <div class="arow"><span class="k">InfoSum Beacon (federated)</span><span class="v"><span class="dot ok"></span>Synced</span></div>
       </div>
-    </div>
-
-    <div class="grid g-3">
-      <div class="card">
-        <div class="card-h"><div><div class="kick">Identity graph</div><h4>Linked identifiers</h4></div><a class="link" href="#" onclick="go('v-graph');return false">Open →</a></div>
-        ${nodes}
-      </div>
-      <div class="card">
-        <div class="card-h"><div><div class="kick">Map · Match · Merge</div><h4>Source lineage</h4></div><a class="link" href="#" onclick="go('v-catalog');return false">Catalog →</a></div>
-        ${lineage}
-      </div>
       <div class="card">
         <div class="card-h"><div><div class="kick">Behavioral</div><h4>Recent activity</h4></div></div>
         <div class="tl">${tl}</div>
       </div>
     </div>
     ${c.campaigns ? `
-    <div class="card" style="margin-top:14px">
+    <div class="card">
       <div class="card-h"><div><div class="kick">Media</div><h4>Campaign participation</h4></div></div>
       <table><thead><tr><th>Campaign</th><th>Scope</th><th>Status</th><th>Label</th></tr></thead><tbody>
         ${campaignsHtml}
@@ -1198,8 +1266,52 @@ function searchAndOpen(query){
     // surface a not-found note without wiping the page
     const el = document.getElementById('profArea');
     if(el) el.insertAdjacentHTML('afterbegin',
-      `<div class="hint" style="margin-bottom:12px;color:var(--warn)">No profile matched "${query.replace(/</g,'')}" — try a name (e.g. Jamie Chen) or an identifier (VXID, vst, permutive-id…).</div>`);
+      `<div class="hint" style="margin-bottom:12px;color:var(--warn)">No profile matched "${query.replace(/</g,'')}" — try a spine key or an identifier (VXID, vst, permutive-id…).</div>`);
   }
+}
+
+function updateSuperSegment(){
+  const res = document.getElementById('ssResult');
+  if(!res) return;
+  const dj = [...document.querySelectorAll('.ss-dj:checked')].map(el=>({name:el.dataset.name, size:+el.dataset.size}));
+  const re = [...document.querySelectorAll('.ss-re:checked')].map(el=>({name:el.dataset.name, size:+el.dataset.size}));
+  const type = document.querySelector('input[name="ssType"]:checked').value;
+
+  if(dj.length===0 || re.length===0){
+    res.innerHTML = `<div class="card-h"><div><div class="kick">Result</div><h4>Super Segment preview</h4></div></div>
+      <div class="hint">Select at least one segment from Dow Jones and one from Realtor.com to preview a Super Segment.</div>`;
+    return;
+  }
+
+  const sumDJ = dj.reduce((s,x)=>s+x.size,0);
+  const sumRE = re.reduce((s,x)=>s+x.size,0);
+  const fmt = n => n>=1000000 ? (n/1000000).toFixed(2)+'M' : Math.round(n/1000)+'K';
+  const label = [...dj.map(x=>x.name), ...re.map(x=>x.name)].join(' + ');
+
+  let size, note, badge;
+  if(type==='stitched'){
+    // Illustrative overlap estimate only — real cross-BU overlap is unverified per the requirements doc.
+    size = Math.round(Math.min(sumDJ,sumRE) * 0.06);
+    note = `Illustrative estimate — applies a 6% overlap assumption to the smaller side. The real deterministic overlap between Dow Jones and Realtor.com is still unverified per the requirements doc (never quote a real % externally).`;
+    badge = `<span class="lbl matched">Stitched — same person</span>`;
+  } else {
+    size = Math.round((sumDJ + sumRE) * 0.97);
+    note = `No overlap required — different people from each BU, grouped because they meet the combined criteria. Light 3% illustrative dedup applied for display only.`;
+    badge = `<span class="lbl modelled">Cohort — different people</span>`;
+  }
+
+  res.innerHTML = `
+    <div class="card-h"><div><div class="kick">Result</div><h4>${label}</h4></div>${badge}</div>
+    <div style="display:flex;gap:20px;flex-wrap:wrap;margin-bottom:10px">
+      <div><div class="kick" style="font-size:9px">SUPER SEGMENT SIZE</div><div class="display" style="font-size:26px;font-weight:700">${fmt(size)}</div></div>
+      <div><div class="kick" style="font-size:9px">DJ CONTRIBUTION</div><div class="display" style="font-size:26px;font-weight:700;color:var(--success)">${fmt(sumDJ)}</div></div>
+      <div><div class="kick" style="font-size:9px">REALTOR CONTRIBUTION</div><div class="display" style="font-size:26px;font-weight:700;color:var(--ai)">${fmt(sumRE)}</div></div>
+    </div>
+    <div class="hint">${note}</div>
+    <div style="display:flex;gap:8px;margin-top:12px">
+      <button class="btn" ${RBAC[state.role].create?'':'disabled'}>Save Super Segment</button>
+      <button class="btn ghost">Preview activation paths</button>
+    </div>`;
 }
 
 /* ---- Identity Graph (full) ---- */
@@ -1402,6 +1514,9 @@ views['v-segments'] = () => {
     <button class="go" onclick="askAI(document.getElementById('segAI').value || 'Draft a canonical definition')">${agency?'Ask':'Draft'}</button>
   </div>
 
+  <div class="note lock" style="margin-bottom:16px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z"/></svg>
+  <span><b>Ontological framework, not forced reconciliation.</b> Where two BUs define the same term differently — e.g. News UK's "C-suite" vs Dow Jones's "C-suite" — the model maps both as related-but-distinct nodes instead of forcing one canonical winner. Both stay queryable; the mapping records how they relate, not which one is "right."</span></div>
+
   <div class="filters">
     <span class="fchip active">All BUs</span><span class="fchip">Dow Jones</span><span class="fchip">Realtor.com</span>
     <span class="fchip" style="margin-left:auto"><span class="lbl matched" style="background:none;padding:0">Matched</span></span>
@@ -1426,19 +1541,20 @@ views['v-segments'] = () => {
   </div>
 
   <div class="card">
-    <table><thead><tr><th>Canonical definition</th><th>Version</th><th>Owner BU</th><th>Status</th><th>Label</th><th>DJ size</th><th>Realtor size</th><th></th></tr></thead><tbody>
+    <table><thead><tr><th>Canonical definition</th><th>Version</th><th>Owner BU</th><th>Status</th><th>Label</th><th>DJ size</th><th>Realtor size</th><th>Identifier coverage</th><th></th></tr></thead><tbody>
       ${[
-        ['C-suite decision-makers','v3 · reconciled','Dow Jones','active','matched','412K','188K',"JOB_TITLE IN (CEO,CFO,COO,CMO,CTO) OR JOB_FUNCTION='Executive' · versioned"],
-        ['High-net-worth households','v2','Realtor.com','active','modelled','96K','1.1M',"INVESTABLE_ASSETS_RANGE≥'1M' (modeled, MATCH_CONFIDENCE≥0.8)"],
-        ['In-market · luxury auto','v1 · draft','Realtor.com','insights','modelled','—','640K',"LUXURY_CAR_OWNER=1 OR clickstream intent proxy · Insights Only until sized"],
-        ['Small-business owners','v4','Dow Jones','active','matched','288K','72K',"COMPANY_NUMBER_OF_EMPLOYEES<50 AND JOB_TITLE='Owner' · deterministic"]
+        ['C-suite decision-makers','v3 · reconciled','Dow Jones','active','matched','412K','188K','VXID 94% · RampID 68%',"JOB_TITLE IN (CEO,CFO,COO,CMO,CTO) OR JOB_FUNCTION='Executive' · versioned"],
+        ['High-net-worth households','v2','Realtor.com','active','modelled','96K','1.1M','vst 100% · Panorama 61%',"INVESTABLE_ASSETS_RANGE≥'1M' (modeled, MATCH_CONFIDENCE≥0.8)"],
+        ['In-market · luxury auto','v1 · draft','Realtor.com','insights','modelled','—','640K','vst 100% · TDID 52%',"LUXURY_CAR_OWNER=1 OR clickstream intent proxy · Insights Only until sized"],
+        ['Small-business owners','v4','Dow Jones','active','matched','288K','72K','VXID 89% · PPID 74%',"COMPANY_NUMBER_OF_EMPLOYEES<50 AND JOB_TITLE='Owner' · deterministic"]
       ].map((s,i)=>`
         <tr><td>${s[0]}</td><td class="ver">${s[1]}</td><td>${s[2]}</td>
           <td><span class="lbl ${s[3]}">${s[3]==='active'?'Active':'Insights only'}</span></td>
           <td><span class="lbl ${s[4]}">${s[4]==='matched'?'Matched':'Modelled'}</span></td>
           <td>${s[5]}</td><td>${s[6]}</td>
+          <td class="mono" style="font-size:10.5px;color:var(--text-soft)">${s[7]}</td>
           <td><a class="link" href="#" onclick="document.getElementById('sr${i}').style.display=document.getElementById('sr${i}').style.display==='none'?'table-row':'none';return false">Rule ▾</a></td></tr>
-        <tr id="sr${i}" style="display:none;background:var(--surface-2)"><td colspan="8"><span class="mono" style="font-size:11.5px;color:var(--text-soft)">${s[7]}</span></td></tr>
+        <tr id="sr${i}" style="display:none;background:var(--surface-2)"><td colspan="9"><span class="mono" style="font-size:11.5px;color:var(--text-soft)">${s[8]}</span></td></tr>
       `).join('')}
     </tbody></table>
     <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap">
@@ -1446,11 +1562,54 @@ views['v-segments'] = () => {
       <button class="btn ghost" ${agency?'disabled':''}>Set precedence</button>
       <button class="btn ghost" ${agency?'disabled':''}>Notify other BU</button>
       <button class="btn ghost">Read &amp; size</button>
+      <a class="btn ghost" href="#" onclick="go('v-supersegments');return false" style="text-decoration:none">Build a Super Segment →</a>
     </div>
     ${agency?`<div class="abac-note show" style="margin-top:12px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>Agency tier can read, size and buy inside the existing taxonomy — creation, precedence and notification are Power-User only.</div>`:
-    `<div class="hint">Active = buyable · Insights Only = measurable but not activatable. Matched = sell deterministic at a premium · Modelled = let it travel. Both mechanics run at Dow Jones today.</div>`}
+    `<div class="hint">Active = buyable · Insights Only = measurable but not activatable. Matched = sell deterministic at a premium · Modelled = let it travel. Identifier coverage shows what share of the segment carries each identifier — low coverage on a destination-critical ID is why a "matched" definition can still under-deliver on activation.</div>`}
   </div>`;
 };
+
+/* ---- Super Segments — "Chinese menu" combinator ---- */
+views['v-supersegments'] = () => `
+  <div class="ph"><div><div class="kick">Audiences · Combinator</div><h1>Super Segments</h1>
+  <p>Pick segments from each BU and combine them into one Super Segment. Two distinct types, per Andrew's Aug 2026 review — pick the type that matches what you actually mean.</p></div></div>
+
+  <div class="grid g-2" style="margin-bottom:14px">
+    <div class="card">
+      <div class="card-h"><div><div class="kick">Type A</div><h4>Stitched Users</h4></div></div>
+      <p style="font-size:12px;color:var(--text-soft);margin:0">The <b>same person</b>, recognized across business units via the licensed spine — e.g. one person who is both a Dow Jones C-suite reader and a Realtor.com in-market mover.</p>
+    </div>
+    <div class="card">
+      <div class="card-h"><div><div class="kick">Type B</div><h4>Cohort Grouping</h4></div></div>
+      <p style="font-size:12px;color:var(--text-soft);margin:0"><b>Different people</b> from different BUs, grouped under one label because they meet the same criteria — no overlap required. Andrew's example: <b>"high-net-worth football fans."</b></p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:14px">
+    <div class="card-h"><div><div class="kick">Menu</div><h4>Select segments from each BU</h4></div></div>
+    <div class="grid g-2">
+      <div>
+        <div class="kick" style="font-size:10px;color:var(--text-faint);margin-bottom:8px">DOW JONES</div>
+        <label class="ss-row"><input type="checkbox" class="ss-dj" data-name="C-suite decision-makers" data-size="412000" onchange="updateSuperSegment()"><span>C-suite decision-makers</span><span class="mono" style="color:var(--text-faint)">412K</span></label>
+        <label class="ss-row"><input type="checkbox" class="ss-dj" data-name="Small-business owners" data-size="288000" onchange="updateSuperSegment()"><span>Small-business owners</span><span class="mono" style="color:var(--text-faint)">288K</span></label>
+      </div>
+      <div>
+        <div class="kick" style="font-size:10px;color:var(--text-faint);margin-bottom:8px">REALTOR.COM</div>
+        <label class="ss-row"><input type="checkbox" class="ss-re" data-name="High-net-worth households" data-size="1100000" onchange="updateSuperSegment()"><span>High-net-worth households</span><span class="mono" style="color:var(--text-faint)">1.1M</span></label>
+        <label class="ss-row"><input type="checkbox" class="ss-re" data-name="In-market · luxury auto" data-size="640000" onchange="updateSuperSegment()"><span>In-market · luxury auto</span><span class="mono" style="color:var(--text-faint)">640K</span></label>
+      </div>
+    </div>
+    <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border)">
+      <div class="kick" style="font-size:10px;color:var(--text-faint);margin-bottom:8px">COMBINE AS</div>
+      <label style="margin-right:20px;font-size:12.5px"><input type="radio" name="ssType" value="stitched" checked onchange="updateSuperSegment()"> Stitched Users</label>
+      <label style="font-size:12.5px"><input type="radio" name="ssType" value="cohort" onchange="updateSuperSegment()"> Cohort Grouping</label>
+    </div>
+  </div>
+
+  <div class="card" id="ssResult">
+    <div class="card-h"><div><div class="kick">Result</div><h4>Super Segment preview</h4></div></div>
+    <div class="hint">Select at least one segment from Dow Jones and one from Realtor.com to preview a Super Segment.</div>
+  </div>`;
 
 /* ---- Activation ---- */
 views['v-activation'] = () => `
@@ -1653,6 +1812,49 @@ views['v-connectors'] = () => {
 };
 
 /* ---- Consent & GDPR ---- */
+/* ---- Reporting — system-wide overlap + performance analytics ---- */
+views['v-reporting'] = () => `
+  <div class="ph"><div><div class="kick">Reporting · System-wide</div><h1>Overlap &amp; performance</h1>
+  <p>Standalone reporting, as its own surface rather than buried inside individual definitions — overlap between segments, and performance analytics across both POC business units.</p></div></div>
+
+  <div class="card" style="margin-bottom:14px">
+    <div class="card-h"><div><div class="kick">Overlap reporting</div><h4>Segment pairs, portfolio-wide</h4></div></div>
+    <table><thead><tr><th>Segment A</th><th>Segment B</th><th>Overlap</th><th>Min-size gate</th><th>Note</th></tr></thead><tbody>
+      <tr><td>C-suite decision-makers (DJ)</td><td>In-market · luxury auto (Realtor)</td><td class="mono">illustrative only</td><td><span class="tag ok">Passed</span></td><td class="idc">real % unverified — never quote externally</td></tr>
+      <tr><td>High-net-worth households (Realtor)</td><td>Small-business owners (DJ)</td><td class="mono">illustrative only</td><td><span class="tag ok">Passed</span></td><td class="idc">real % unverified — never quote externally</td></tr>
+      <tr><td>C-suite decision-makers (DJ)</td><td>High-net-worth households (Realtor)</td><td class="mono">illustrative only</td><td><span class="tag warn">Below threshold</span></td><td class="idc">too narrow to report at Tier A gate</td></tr>
+    </tbody></table>
+    <div class="hint">"The verified deterministic overlap between the two POC business units" is listed as an open question in the requirements doc — this table shows the reporting mechanism, not a real settled figure.</div>
+  </div>
+
+  <div class="grid g-3" style="margin-bottom:14px">
+    <div class="card">
+      <div class="kick" style="font-size:9px;color:var(--text-faint)">DJ PROGRAMMATIC ECPM</div>
+      <div class="display" style="font-size:26px;font-weight:700;margin:4px 0;color:var(--success)">$11.57</div>
+      <div style="font-size:11.5px;color:var(--text-soft)">vs. $0.24–$2.00 third-party floor — real, curated deals already outperform open auction</div>
+    </div>
+    <div class="card">
+      <div class="kick" style="font-size:9px;color:var(--text-faint)">REALTOR GAM↔CLICKSTREAM MATCH</div>
+      <div class="display" style="font-size:26px;font-weight:700;margin:4px 0">82.65%</div>
+      <div style="font-size:11.5px;color:var(--text-soft)">real, UTC-7 window — the identity-resolution rate the console is built on</div>
+    </div>
+    <div class="card">
+      <div class="kick" style="font-size:9px;color:var(--text-faint)">EXISTING BARTER — REALIZED YIELD</div>
+      <div class="display" style="font-size:26px;font-weight:700;margin:4px 0;color:var(--danger)">0.0–0.2%</div>
+      <div style="font-size:11.5px;color:var(--text-soft)">of receiving audience — 32 DJ cohorts already sit in Realtor's workspace, barely activated</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-h"><div><div class="kick">Performance by destination class</div><h4>Where activated audiences actually deliver</h4></div></div>
+    <table><thead><tr><th>Destination</th><th>Delivered (30d)</th><th>Avg. match rate</th><th>Trend</th></tr></thead><tbody>
+      <tr><td>Xandr Curate</td><td>412K</td><td>94%</td><td><span class="tag ok">↑ stable</span></td></tr>
+      <tr><td>Permutive → GAM</td><td>288K</td><td>91%</td><td><span class="tag warn">batch delay</span></td></tr>
+      <tr><td>InfoSum Beacon (federated)</td><td>96K</td><td>—</td><td><span class="tag mute">insights only</span></td></tr>
+      <tr><td>BU lake / S3</td><td>640K</td><td>100%</td><td><span class="tag ok">↑ stable</span></td></tr>
+    </tbody></table>
+  </div>`;
+
 views['v-consent'] = () => `
   <div class="ph"><div><div class="kick">Governance · Consent &amp; eligibility</div><h1>Consent &amp; eligibility</h1>
   <p>A consent field on every data line — for the POC: opted-out / not opted-out, United States. Each BU checks source eligibility against a written checklist; a region fence keeps out-of-geography records out of any audience.</p></div></div>
@@ -1901,6 +2103,18 @@ function toggleTheme(){
   const root = document.documentElement;
   root.dataset.theme = root.dataset.theme === 'light' ? 'dark' : 'light';
 }
+
+/* ---- notifications ---- */
+function toggleNotifs(){
+  document.getElementById('notifPanel').classList.toggle('show');
+}
+document.addEventListener('click', e=>{
+  const wrap = document.querySelector('.notif-wrap');
+  const panel = document.getElementById('notifPanel');
+  if(panel && panel.classList.contains('show') && wrap && !wrap.contains(e.target)){
+    panel.classList.remove('show');
+  }
+});
 
 /* ---- boot ---- */
 document.addEventListener('keydown', e=>{
