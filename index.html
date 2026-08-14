@@ -354,9 +354,9 @@
   .fchip{border:1px solid var(--border);background:var(--surface);padding:6px 13px;border-radius:20px;font-size:12px;color:var(--text-soft);}
   .fchip.active{background:var(--primary);color:#fff;border-color:var(--primary);}
 
-  .toggle{position:relative;width:36px;height:20px;background:var(--surface-3);border-radius:12px;flex-shrink:0;transition:background .15s;}
-  .toggle::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:left .15s;}
-  .toggle.on{background:var(--primary);} .toggle.on::after{left:18px;}
+  .btn-toggle{position:relative;width:36px;height:20px;background:var(--surface-3);border-radius:12px;flex-shrink:0;transition:background .15s;}
+  .btn-toggle::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:left .15s;}
+  .btn-toggle.on{background:var(--primary);} .btn-toggle.on::after{left:18px;}
   .trow{display:flex;align-items:center;justify-content:space-between;padding:8px 0;font-size:12.5px;}
   .trow .l{color:var(--text-soft);} .trow .l b{color:var(--text);}
 
@@ -468,8 +468,9 @@
         <div class="seg">
           <label>Tier</label>
           <select id="roleSel" onchange="applyContext()">
-            <option value="power">Power User</option>
-            <option value="agency">Agency</option>
+            <option value="power">Power User (internal, edit)</option>
+            <option value="internal_viewer">Internal Viewer (internal, view)</option>
+            <option value="agency">Agency (external, view)</option>
           </select>
         </div>
         <div class="seg">
@@ -1008,12 +1009,14 @@ const CUSTOMERS = {
    RBAC: role decides which ACTIONS exist.
    ABAC: viewer region + data usage-label + record consent decide what DATA is visible.
 */
-// Two tiers from the POC requirements:
-//  Power User — taxonomy changes, field add/remove, precedence, audience creation, push anywhere
-//  Agency     — read, size and buy inside the existing taxonomy. No creation, no precedence, limited destinations
+// Three tiers — internal editing vs. internal viewing vs. external viewing (Aug 2026 UX review):
+//  Power User      — internal editing: taxonomy changes, field add/remove, precedence, audience creation, push anywhere
+//  Internal Viewer — internal viewing: sees everything internal (reporting, overlap, full definitions) but cannot edit
+//  Agency          — external viewing: read, size and buy inside the existing taxonomy only. No internal reporting visibility.
 const RBAC = {
-  power:  { view:true, activate:true,  manageConsent:true,  export:true,  create:true,  precedence:true,  pushAnywhere:true },
-  agency: { view:true, activate:false, manageConsent:false, export:false, create:false, precedence:false, pushAnywhere:false }
+  power:           { view:true, activate:true,  manageConsent:true,  export:true,  create:true,  precedence:true,  pushAnywhere:true,  internalReporting:true  },
+  internal_viewer: { view:true, activate:false, manageConsent:false, export:true,  create:false, precedence:false, pushAnywhere:false, internalReporting:true  },
+  agency:          { view:true, activate:false, manageConsent:false, export:false, create:false, precedence:false, pushAnywhere:false, internalReporting:false }
 };
 
 // Can the current viewer SEE this attribute's value?
@@ -1223,12 +1226,14 @@ function renderProfile(){
 }
 
 function viewerLabel(){
-  const rl = {power:'Power User', agency:'Agency'}[state.role];
+  const rl = {power:'Power User', internal_viewer:'Internal Viewer', agency:'Agency'}[state.role];
   return `${rl} · ${state.region}`;
 }
 function manageContextMsg(c){
   if(state.role === 'agency')
-    return `Agency tier: read, size and buy inside the existing taxonomy. No creation, no precedence, limited destinations — management controls are hidden.`;
+    return `Agency tier (external viewing): read, size and buy inside the existing taxonomy. No creation, no precedence, limited destinations, no internal reporting visibility — management controls are hidden.`;
+  if(state.role === 'internal_viewer')
+    return `Internal Viewer (internal viewing): sees everything internal — full attributes, lineage, reporting — but cannot create, set precedence, or manage consent. That's Power User only.`;
   return `You're viewing from ${state.region}. Consent and record management for this ${c.home} business unit are handled by ${c.home} operators — controls are hidden here for data-residency compliance.`;
 }
 
@@ -1463,6 +1468,15 @@ views['v-match'] = () => `
   <div class="ph"><div><div class="kick">Identity · Matching</div><h1>ID matching</h1>
   <p>Map, Match and Merge rules that unify records, plus batch runs and a real-time match tester.</p></div>
   <button class="btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>New batch job</button></div>
+
+  <div class="card" style="margin-bottom:14px">
+    <div class="card-h"><div><div class="kick">Identity &amp; stitching inputs</div><h4>Three input types — only one is in scope</h4></div></div>
+    <div class="arow"><span class="k">Authentication stitching</span><span class="tag ok">In scope — real, HAR-confirmed</span></div>
+    <div class="arow"><span class="k">Identifier enrichment</span><span class="tag bad">Out of scope — explicit, Phase 2 only</span></div>
+    <div class="arow"><span class="k">Attribution enrichment</span><span class="tag bad">Out of scope — "conversions and attribution" explicitly excluded</span></div>
+    <div class="hint">Authentication stitching is proven: the live HAR capture showed Permutive's identify call upgrade from anonymous (visitor_id + adobe_id) to deterministic (login_id + email_sha256, priority 0) the moment a user logs in — that's real, not aspirational. The other two are named directly in the requirements doc's "Out of scope" list — building them now would be scope creep, not a gap.</div>
+  </div>
+
   <div class="grid g-2" style="margin-bottom:14px">
     <div class="card">
       <div class="card-h"><div><div class="kick">Rule pipeline</div><h4>Map · Match · Merge</h4></div></div>
@@ -1483,8 +1497,8 @@ views['v-match'] = () => `
         <div style="font-size:12px;color:var(--text-soft);margin:2px 0 8px">Realtor GAM↔clickstream join, UTC-7 (406,854 / 492,245) · deterministic</div>
         <div style="font-size:12px">Shared signals: household IP, loyalty cross-ref, email-hash overlap</div>
       </div>
-      <div style="margin-top:14px"><div class="trow"><span class="l">Split-profile alerts <b>(rule drift)</b></span><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
-      <div class="trow"><span class="l">Inspection mode</span><button class="toggle" onclick="this.classList.toggle('on')"></button></div></div>
+      <div style="margin-top:14px"><div class="trow"><span class="l">Split-profile alerts <b>(rule drift)</b></span><button class="btn-toggle on" onclick="this.classList.toggle('on')"></button></div>
+      <div class="trow"><span class="l">Inspection mode</span><button class="btn-toggle" onclick="this.classList.toggle('on')"></button></div></div>
     </div>
   </div>
   <div class="card">
@@ -1813,7 +1827,16 @@ views['v-connectors'] = () => {
 
 /* ---- Consent & GDPR ---- */
 /* ---- Reporting — system-wide overlap + performance analytics ---- */
-views['v-reporting'] = () => `
+views['v-reporting'] = () => {
+  if(!RBAC[state.role].internalReporting){
+    return `
+    <div class="ph"><div><div class="kick">Reporting · System-wide</div><h1>Overlap &amp; performance</h1></div></div>
+    <div class="card">
+      <div class="card-h"><div><div class="kick">Restricted</div><h4>Internal reporting is not visible at this tier</h4></div></div>
+      <div class="hint" style="margin:0">Agency (external viewing) can read, size and buy inside the existing taxonomy — but overlap figures and cross-BU performance analytics are internal-only. Switch Tier to Power User or Internal Viewer (top-right) to see this screen.</div>
+    </div>`;
+  }
+  return `
   <div class="ph"><div><div class="kick">Reporting · System-wide</div><h1>Overlap &amp; performance</h1>
   <p>Standalone reporting, as its own surface rather than buried inside individual definitions — overlap between segments, and performance analytics across both POC business units.</p></div></div>
 
@@ -1854,6 +1877,7 @@ views['v-reporting'] = () => `
       <tr><td>BU lake / S3</td><td>640K</td><td>100%</td><td><span class="tag ok">↑ stable</span></td></tr>
     </tbody></table>
   </div>`;
+};
 
 views['v-consent'] = () => `
   <div class="ph"><div><div class="kick">Governance · Consent &amp; eligibility</div><h1>Consent &amp; eligibility</h1>
@@ -2019,19 +2043,20 @@ views['v-consent'] = () => `
 /* ---- Access (RBAC / ABAC) ---- */
 views['v-access'] = () => `
   <div class="ph"><div><div class="kick">Governance · Access</div><h1>Access — RBAC &amp; ABAC</h1>
-  <p>Two layers work together. <b>RBAC</b> decides which actions a role can take. <b>ABAC</b> decides which data and controls appear based on the viewer's region and each record's residency and consent. Change the context switch (top-right) and reopen a profile to see it live.</p></div></div>
+  <p>Two layers work together. <b>RBAC</b> decides which actions a role can take — split three ways: internal editing, internal viewing, external viewing. <b>ABAC</b> decides which data and controls appear based on the viewer's region and each record's residency and consent. Change the context switch (top-right) and reopen a profile to see it live.</p></div></div>
   <div class="grid g-2">
     <div class="card">
-      <div class="card-h"><div><div class="kick">Role-based · two POC tiers</div><h4>RBAC — action matrix</h4></div></div>
-      <table class="matrix"><thead><tr><th>Action</th><th>Power User</th><th>Agency</th></tr></thead><tbody>
-        <tr><td>Read, size &amp; buy in existing taxonomy</td><td class="yes">✓</td><td class="yes">✓</td></tr>
-        <tr><td>Taxonomy changes · field add/remove</td><td class="yes">✓</td><td class="no">—</td></tr>
-        <tr><td>Create / edit a definition</td><td class="yes">✓</td><td class="no">—</td></tr>
-        <tr><td>Set precedence</td><td class="yes">✓</td><td class="no">—</td></tr>
-        <tr><td>Push destinations</td><td class="yes">anywhere</td><td class="cond">limited</td></tr>
-        <tr><td>Manage consent</td><td class="cond">cond.</td><td class="no">—</td></tr>
+      <div class="card-h"><div><div class="kick">Role-based · three tiers</div><h4>RBAC — action matrix</h4></div></div>
+      <table class="matrix"><thead><tr><th>Action</th><th>Power User<br><span style="font-size:9px;color:var(--text-faint)">internal, edit</span></th><th>Internal Viewer<br><span style="font-size:9px;color:var(--text-faint)">internal, view</span></th><th>Agency<br><span style="font-size:9px;color:var(--text-faint)">external, view</span></th></tr></thead><tbody>
+        <tr><td>Read, size &amp; buy in existing taxonomy</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+        <tr><td>Internal reporting &amp; overlap visibility</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">—</td></tr>
+        <tr><td>Taxonomy changes · field add/remove</td><td class="yes">✓</td><td class="no">—</td><td class="no">—</td></tr>
+        <tr><td>Create / edit a definition</td><td class="yes">✓</td><td class="no">—</td><td class="no">—</td></tr>
+        <tr><td>Set precedence</td><td class="yes">✓</td><td class="no">—</td><td class="no">—</td></tr>
+        <tr><td>Push destinations</td><td class="yes">anywhere</td><td class="no">—</td><td class="cond">limited</td></tr>
+        <tr><td>Manage consent</td><td class="cond">cond.</td><td class="no">—</td><td class="no">—</td></tr>
       </tbody></table>
-      <div class="hint">Every action is attributable to a named actor (see Lifecycle &amp; Audit).</div>
+      <div class="hint">Every action is attributable to a named actor (see Lifecycle &amp; Audit). Internal Viewer exists for News Corp/MadConnect stakeholders who need full visibility for review purposes without edit rights — distinct from Agency, which is a genuinely external, restricted view.</div>
     </div>
     <div class="card">
       <div class="card-h"><div><div class="kick">Attribute-based</div><h4>ABAC — contextual rules</h4></div></div>
@@ -2044,7 +2069,7 @@ views['v-access'] = () => `
   <div class="card" style="margin-top:14px">
     <div class="card-h"><div><div class="kick">Try it</div><h4>Current effective context</h4></div></div>
     <div id="ctxEcho" style="font-family:'JetBrains Mono';font-size:12.5px;color:var(--text-soft)"></div>
-    <div class="hint">Switch Tier (Power User / Agency) up top, then open Profile Search or Definitions — create/precedence controls and field masking update instantly.</div>
+    <div class="hint">Switch Tier (Power User / Internal Viewer / Agency) up top, then open Profile Search, Definitions, or Reporting — create/precedence controls, field masking, and internal-reporting visibility all update instantly.</div>
   </div>`;
 
 /* ============================================================
@@ -2072,11 +2097,12 @@ function applyContext(){
 function echoCtx(){
   const el = document.getElementById('ctxEcho'); if(!el) return;
   const p = RBAC[state.role];
-  const tier = {power:'Power User', agency:'Agency'}[state.role];
+  const tier = {power:'Power User', internal_viewer:'Internal Viewer', agency:'Agency'}[state.role];
   el.innerHTML = `tier=<b style="color:var(--text)">${tier}</b> · region=<b style="color:var(--text)">${state.region}</b><br>`
     + `→ create definition: ${p.create?'<span style="color:var(--success)">yes</span>':'<span style="color:var(--danger)">no</span>'}`
     + ` · set precedence: ${p.precedence?'<span style="color:var(--success)">yes</span>':'<span style="color:var(--danger)">no</span>'}`
     + ` · push: ${p.pushAnywhere?'<span style="color:var(--success)">anywhere</span>':'<span style="color:var(--warn)">limited</span>'}<br>`
+    + `→ internal reporting/overlap visibility: ${p.internalReporting?'<span style="color:var(--success)">yes</span>':'<span style="color:var(--danger)">no — external viewer</span>'}<br>`
     + `→ outputs are aggregate + min-size gated · Insights-Only definitions are not activatable · no raw PII outbound.`;
 }
 
