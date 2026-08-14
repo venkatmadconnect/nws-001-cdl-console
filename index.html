@@ -534,6 +534,7 @@
       <div class="g-label">Activate — what leaves</div>
       <button class="nav-item" data-t="v-activation"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>Activation</button>
       <button class="nav-item" data-t="v-connectors"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 2l4 4-4 4M3 11V9a4 4 0 014-4h14M7 22l-4-4 4-4M21 13v2a4 4 0 01-4 4H3"/></svg>ICL Connectors</button>
+      <button class="nav-item" data-t="v-planning"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>Planning &amp; Agentic Endpoint</button>
     </div>
     <div class="nav-group">
       <div class="g-label">Reporting</div>
@@ -1675,16 +1676,6 @@ views['v-activation'] = () => `
     </div>
   </div>
 
-  <div class="card" style="margin-bottom:14px">
-    <div class="card-h"><div><div class="kick">UC-D · Priority</div><h4>Planning export</h4></div><span class="tag ok">Lead: Custody · Support: Insight, One meaning</span></div>
-    <p style="font-size:12.5px;color:var(--text-soft);margin:0 0 12px">Portfolio data exported to a clean room for planning and overlap analysis. Federated — processing happens inside the agency's environment, nothing rests outside it. This is destination class 4 above, made concrete.</p>
-    <div class="arow"><span class="k">Destination</span><span class="v">External systems (class) → InfoSum Beacon — first implementation, not the design</span></div>
-    <div class="arow"><span class="k">Model 1 — reach &amp; frequency planning</span><span class="tag ok">Allowed</span></div>
-    <div class="arow"><span class="k">Model 2 — overlap / dedup analysis</span><span class="tag ok">Allowed</span></div>
-    <div class="arow"><span class="k">Model 3 — predictive licensing pattern</span><span class="tag bad">Blocked — reads as data licensing</span></div>
-    <div class="hint">Usage stops short of licensing. Source obfuscation on delivery, no raw personal data outbound. A permissible-use envelope is recorded per delivery. POC credibility must not rest on one vendor's quality — InfoSum is the first implementation, not the design.</div>
-  </div>
-
   <div class="card">
     <div class="card-h"><div><div class="kick">Recent pushes</div><h4>Definition → destination</h4></div></div>
     <table><thead><tr><th>Definition</th><th>Destination class</th><th>Label</th><th>Status gate</th><th>Consent gate</th><th>Delivery</th></tr></thead><tbody>
@@ -1800,8 +1791,7 @@ views['v-connectors'] = () => {
     ['Atlan','Live · DJ catalog sync','ok'],['Acryl / DataHub','Live · Realtor Snowflake','ok'],['AWS Glue/Athena','Live · Realtor GAM logs','ok'],
     ['AWS S3','Live · rdc-media-public','ok'],['LiveRamp','Placeholder spine · Experian rejected, not tag-live','warn'],['The Trade Desk','In progress · UID2.0','warn'],
     ['Xandr Curate','Live · AAMP connector','ok'],['MS Curate','Live · AAMP connector','ok'],['InfoSum Beacon','Live · federated (WPP)','ok'],
-    ['Google DV360','Certified buyer','ok'],['Yahoo DSP','Certified buyer','ok'],['DJCMP (Consent MW)','Live · consent sync','ok'],['MadConnect AWS grant','Blocked · no account ID','bad'],
-    ['MCP Endpoint (seller-side)','Design stage · UC-F Agentic endpoint','warn'],['AdCP / IAB-Prebid standards','Draft · not yet published','mute']
+    ['Google DV360','Certified buyer','ok'],['Yahoo DSP','Certified buyer','ok'],['DJCMP (Consent MW)','Live · consent sync','ok'],['MadConnect AWS grant','Blocked · no account ID','bad']
   ];
   return `
   <div class="ph"><div><div class="kick">Data · Connectivity</div><h1>ICL connectors — real stack</h1>
@@ -1819,17 +1809,35 @@ views['v-connectors'] = () => {
   </div>
 
   <div class="grid g-3" style="margin-bottom:16px">
-    <div class="card"><div class="kick" style="font-family:'JetBrains Mono';font-size:9px;color:var(--text-faint)">CONNECTED</div><div class="display" style="font-size:26px;font-weight:700;margin-top:4px">13 / 18</div><div style="font-size:12px;color:var(--text-soft)">live systems</div></div>
+    <div class="card"><div class="kick" style="font-family:'JetBrains Mono';font-size:9px;color:var(--text-faint)">CONNECTED</div><div class="display" style="font-size:26px;font-weight:700;margin-top:4px">13 / 16</div><div style="font-size:12px;color:var(--text-soft)">live systems</div></div>
     <div class="card"><div class="kick" style="font-family:'JetBrains Mono';font-size:9px;color:var(--text-faint)">MOVEMENT</div><div class="display" style="font-size:26px;font-weight:700;margin-top:4px;color:var(--success)">Zero-copy</div><div style="font-size:12px;color:var(--text-soft)">no data leaves estate</div></div>
     <div class="card"><div class="kick" style="font-family:'JetBrains Mono';font-size:9px;color:var(--text-faint)">BLOCKING</div><div class="display" style="font-size:26px;font-weight:700;margin-top:4px;color:var(--danger)">1</div><div style="font-size:12px;color:var(--text-soft)">MadConnect AWS account ID</div></div>
   </div>
   <div class="conn-grid">
     ${conns.map(([n,s,st])=>`<div class="conn"><div class="ci">${n[0]}</div><div><div class="cn">${n}</div><div class="cs"><span class="dot ${st}"></span>${s}</div></div></div>`).join('')}
   </div>
-  <div class="hint" style="margin-top:12px">Permutive has no API — every activation to it is a storage write that Permutive ingests on its own schedule, not a real-time call. This is the batch leg that needs proving end-to-end.</div>
+  <div class="note info" style="margin-top:12px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg><span>MCP endpoint and agentic buyer counterparties live on <a class="link" href="#" onclick="go('v-planning');return false">Planning &amp; Agentic Endpoint →</a>, not here — this screen is just the system/vendor connector map.</span></div>
+  <div class="hint" style="margin-top:12px">Permutive has no API — every activation to it is a storage write that Permutive ingests on its own schedule, not a real-time call. This is the batch leg that needs proving end-to-end.</div>`;
+};
 
-  <div class="card" style="margin-top:16px">
-    <div class="card-h"><div><div class="kick">Agentic access · UC-F, Agentic endpoint</div><h4>MCP endpoint</h4></div><span class="tag warn">Design stage</span></div>
+/* ---- Planning & Agentic Endpoint — UC-D + the MCP mechanism, under Activate ---- */
+views['v-planning'] = () => `
+  <div class="ph"><div><div class="kick">Activate · What leaves</div><h1>Planning &amp; agentic endpoint</h1>
+  <p>Two things that leave the estate without a media buy attached: a clean-room export for planning, and a governed answer to an agent's question. Neither belongs inside Activation's destination-class mechanics or the Connectors' vendor map — both get their own home here.</p></div></div>
+
+  <div class="card" style="margin-bottom:14px">
+    <div class="card-h"><div><div class="kick">UC-D · Priority</div><h4>Planning export</h4></div><span class="tag ok">Lead: Custody · Support: Insight, One meaning</span></div>
+    <p style="font-size:12.5px;color:var(--text-soft);margin:0 0 12px">Portfolio data exported to a clean room for planning and overlap analysis. Federated — processing happens inside the agency's environment, nothing rests outside it.</p>
+    <div class="arow"><span class="k">Destination</span><span class="v">External systems (class) → InfoSum Beacon — first implementation, not the design</span></div>
+    <div class="arow"><span class="k">Model 1 — reach &amp; frequency planning</span><span class="tag ok">Allowed</span></div>
+    <div class="arow"><span class="k">Model 2 — overlap / dedup analysis</span><span class="tag ok">Allowed</span></div>
+    <div class="arow"><span class="k">Model 3 — predictive licensing pattern</span><span class="tag bad">Blocked — reads as data licensing</span></div>
+    <div class="hint">Usage stops short of licensing. Source obfuscation on delivery, no raw personal data outbound. A permissible-use envelope is recorded per delivery. POC credibility must not rest on one vendor's quality — InfoSum is the first implementation, not the design.</div>
+  </div>
+
+  <div class="card" style="margin-bottom:14px">
+    <div class="card-h"><div><div class="kick">UC-F · Awaiting a decision</div><h4>Agentic endpoint</h4></div><span class="tag bad">Not yet approved</span></div>
+    <p style="font-size:12.5px;color:var(--text-soft);margin:0 0 12px">An agency agent sends a brief. A seller-side endpoint reads it, maps it to canonical definitions, and returns size, composition, availability and delivery options. It does not transact inventory.</p>
     <div style="display:flex;gap:10px;align-items:center;padding:12px 14px;background:var(--surface-2);border-radius:8px;border:1px solid var(--border);margin-bottom:12px">
       <span class="mono" style="font-size:12px;color:var(--text-soft)">mcp.icl.madconnect.io/nws-001/v1</span>
       <span class="tag mute" style="margin-left:auto">stdio / SSE</span>
@@ -1838,10 +1846,19 @@ views['v-connectors'] = () => {
     <div class="arow"><span class="k">Exposed tools</span><span class="v mono" style="font-size:11px">list_definitions · size_audience · check_availability</span></div>
     <div class="arow"><span class="k">Auth</span><span class="v">Agency-tier OAuth token, scoped to source-BU approved definitions only</span></div>
     <div class="arow"><span class="k">Returns</span><span class="v">Size + composition + availability only — no raw records, no direct buy</span></div>
-    <div class="hint">This is the agency-agent path (UC-F, Agentic endpoint): an agent asks "how big is C-suite decision-makers on Realtor.com" and gets a governed number back — same min-size and Active/Insights-Only gates as the console. Hand-off only; no transaction happens over MCP in this POC.</div>
+    <div style="display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap;margin-top:12px">
+      <div style="flex:1;min-width:220px;padding:12px;background:var(--surface-2);border-radius:8px;border:1px solid var(--border);font-family:'JetBrains Mono';font-size:11.5px;color:var(--text-soft)">
+        "Find C-suite decision-makers reachable across News Corp, US only"
+      </div>
+      <div style="color:var(--text-faint);align-self:center">→</div>
+      <div style="flex:1;min-width:220px;padding:12px;background:var(--surface-2);border-radius:8px;border:1px solid var(--border);font-family:'JetBrains Mono';font-size:11.5px;color:var(--success)">
+        {"definition": "C-suite decision-makers", "size": 600000, "availability": ["Xandr Curate","Permutive→GAM"]}
+      </div>
+    </div>
+    <div class="hint">An unmatched brief resolves to a stated proxy definition rather than failing quietly. Min-size + throttling so nobody infers membership by querying repeatedly. Every query and authorisation decision logged. Hand-off only — no transaction happens over MCP in this POC.</div>
   </div>
 
-  <div class="card" style="margin-top:16px">
+  <div class="card">
     <div class="card-h"><div><div class="kick">Agent counterparties · buyer-side</div><h4>Who actually connects to the endpoint</h4></div></div>
     <p style="font-size:12.5px;color:var(--text-soft);margin:0 0 12px">The seller-side endpoint above is only half the connection. None of these is confirmed — this is the open decision, not a settled roster.</p>
     <div class="arow"><span class="k">WPP buyer agent (Open Intelligence)</span><span class="tag bad">Regional beta, UK/CTV-only · ~6 months out, after CES</span></div>
@@ -1850,100 +1867,55 @@ views['v-connectors'] = () => {
     <div class="note info" style="margin-top:12px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg><span>The CES showcase partner (WPP, for InfoSum Beacon delivery) and the agentic partner for this endpoint can be different agencies — that split is explicit in the requirements, not a gap.</span></div>
     <div class="hint">Nothing here goes live until one agency's agent completes an unassisted end-to-end run. A phone call anywhere in the loop disqualifies the demo.</div>
   </div>`;
-};
 
 /* ---- Consent & GDPR ---- */
 /* ---- Reporting — system-wide overlap + performance analytics ---- */
 views['v-reporting'] = () => {
   if(!RBAC[state.role].internalReporting){
     return `
-    <div class="ph"><div><div class="kick">Reporting · System-wide</div><h1>Overlap &amp; performance</h1></div></div>
+    <div class="ph"><div><div class="kick">Reporting · System-wide</div><h1>Reporting</h1></div></div>
     <div class="card">
       <div class="card-h"><div><div class="kick">Restricted</div><h4>Internal reporting is not visible at this tier</h4></div></div>
-      <div class="hint" style="margin:0">Agency (external viewing) can read, size and buy inside the existing taxonomy — but overlap figures and cross-BU performance analytics are internal-only. Switch Tier to Power User or Internal Viewer (top-right) to see this screen.</div>
+      <div class="hint" style="margin:0">Agency (external viewing) can read, size and buy inside the existing taxonomy — but this reporting layer is internal-only. Switch Tier to Power User or Internal Viewer (top-right) to see this screen.</div>
     </div>`;
   }
   return `
-  <div class="ph"><div><div class="kick">Reporting · System-wide · Cross-cutting</div><h1>Overlap &amp; performance</h1>
-  <p>Standalone reporting, as its own surface rather than buried inside individual definitions. Per the deck: this is one of <b>12 capabilities, not 9</b> — UX, Reporting, and Security cut across the Ingest/Govern/Activate flow rather than sitting inside any one stage of it.</p></div></div>
+  <div class="ph"><div><div class="kick">Reporting · System-wide · Cross-cutting</div><h1>Reporting</h1>
+  <p>Per the deck: this is one of <b>12 capabilities, not 9</b> — UX, Reporting, and Security cut across the Ingest/Govern/Activate flow rather than sitting inside any one stage of it. The two use cases that live here — Measurement enrichment and Portfolio analysis — run the same untargeted key-value engine, with or without an advertiser file.</p></div></div>
 
   <div class="card" style="margin-bottom:14px">
-    <div class="card-h"><div><div class="kick">Reference</div><h4>The six use cases, by proper name</h4></div></div>
-    <table style="font-size:12px"><thead><tr><th>#</th><th>Name</th><th>Priority</th><th>Leads claim</th><th></th></tr></thead><tbody>
-      <tr><td class="mono">A</td><td>Measurement enrichment</td><td><span class="tag ok">Priority</span></td><td>Insight</td>
-        <td><a class="link" href="#" onclick="document.getElementById('uc-a').style.display=document.getElementById('uc-a').style.display==='none'?'block':'none';return false">See mock ▾</a></td></tr>
-      <tr><td colspan="5" style="padding:0"><div id="uc-a" style="display:none;padding:14px;background:var(--surface-2);border-radius:8px;margin:8px 0">
-        <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">
-          <div style="flex:1;min-width:170px;border:1.5px dashed var(--border);border-radius:10px;padding:14px;text-align:center;color:var(--text-faint);font-size:11.5px">
-            exposure_file_q3.csv<br><span style="font-size:10px">492,245 impressions</span></div>
-          <div style="color:var(--text-faint)">→</div>
-          <table style="font-size:11px;flex:2"><thead><tr><th>Key-value (untargeted)</th><th>Uplift</th></tr></thead><tbody>
-            <tr><td class="idc">kv:executive</td><td><span class="tag ok">+18%</span></td></tr>
-            <tr><td class="idc">kv:section=Finance</td><td><span class="tag ok">+11%</span></td></tr>
-          </tbody></table>
-        </div>
-        <div class="hint">Join is on the campaign, not identity. Output is aggregate — rows are not additive.</div>
-      </div></td></tr>
-
-      <tr><td class="mono">B</td><td>Portfolio analysis</td><td><span class="tag ok">Priority</span></td><td>Insight</td>
-        <td><a class="link" href="#" onclick="document.getElementById('uc-b').style.display=document.getElementById('uc-b').style.display==='none'?'block':'none';return false">See mock ▾</a></td></tr>
-      <tr><td colspan="5" style="padding:0"><div id="uc-b" style="display:none;padding:14px;background:var(--surface-2);border-radius:8px;margin:8px 0">
-        <table style="font-size:11px"><thead><tr><th>Untargeted key-value</th><th>DJ reach</th><th>Realtor reach</th><th>Min-size gate</th></tr></thead><tbody>
-          <tr><td class="idc">kv:executive</td><td>412K</td><td>188K</td><td><span class="tag ok">Passed</span></td></tr>
-          <tr><td class="idc">intent:auto_luxury</td><td>—</td><td>640K</td><td><span class="tag ok">Passed</span></td></tr>
-          <tr><td class="idc">kv:niche_hobby_x</td><td>2.1K</td><td>340</td><td><span class="tag bad">Suppressed</span></td></tr>
+    <div class="card-h"><div><div class="kick">UC-A · Priority · Leads Insight</div><h4>Measurement enrichment</h4></div>
+      <a class="link" href="#" onclick="document.getElementById('uc-a').style.display=document.getElementById('uc-a').style.display==='none'?'block':'none';return false">See mock ▾</a></div>
+    <p style="font-size:12.5px;color:var(--text-soft);margin:0">Advertiser sends a measurement file. It comes back enriched with untargeted key-value signal — joined on the campaign, not identity, so no user-level match is needed. Conversions and attribution are explicitly out of scope.</p>
+    <div id="uc-a" style="display:none;margin-top:14px;padding:14px;background:var(--surface-2);border-radius:8px">
+      <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">
+        <div style="flex:1;min-width:170px;border:1.5px dashed var(--border);border-radius:10px;padding:14px;text-align:center;color:var(--text-faint);font-size:11.5px">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="width:20px;height:20px;margin-bottom:6px"><path d="M12 3v12M7 10l5 5 5-5M4 21h16"/></svg><br>
+          exposure_file_q3.csv<br><span style="font-size:10px">492,245 impressions</span></div>
+        <div style="color:var(--text-faint)">→</div>
+        <table style="font-size:11.5px;flex:2"><thead><tr><th>Key-value (untargeted)</th><th>Engagement uplift</th></tr></thead><tbody>
+          <tr><td class="idc">kv:executive</td><td><span class="tag ok">+18%</span></td></tr>
+          <tr><td class="idc">kv:section=Finance</td><td><span class="tag ok">+11%</span></td></tr>
+          <tr><td class="idc">kv:fantasy_football</td><td><span class="tag warn">+4%</span></td></tr>
         </tbody></table>
-        <div class="hint">Same engine as A, no advertiser file — News Corp's own portfolio view.</div>
-      </div></td></tr>
-
-      <tr><td class="mono">C</td><td>Unified segment buys</td><td><span class="tag ok">Priority</span></td><td>One meaning</td>
-        <td><a class="link" href="#" onclick="go('v-segments');return false">Open Definitions →</a></td></tr>
-      <tr><td class="mono">D</td><td>Planning export</td><td><span class="tag ok">Priority</span></td><td>Custody</td>
-        <td><a class="link" href="#" onclick="go('v-activation');return false">Open Activation →</a></td></tr>
-      <tr><td class="mono">E</td><td>Audience variant testing</td><td><span class="tag warn">Conditional</span></td><td>Insight</td>
-        <td><a class="link" href="#" onclick="go('v-match');return false">Open ID Matching →</a></td></tr>
-      <tr><td class="mono">F</td><td>Agentic endpoint</td><td><span class="tag bad">Awaiting a decision</span></td><td>One meaning</td>
-        <td><a class="link" href="#" onclick="go('v-connectors');return false">Open Connectors →</a></td></tr>
-    </tbody></table>
-    <div class="hint">A/B mocks are shown inline since nothing else in the console demonstrates them — C, D, E, F jump to the screen that already is that use case, rather than duplicating it.</div>
-  </div>
-
-  <div class="card" style="margin-bottom:14px">
-    <div class="card-h"><div><div class="kick">Overlap reporting</div><h4>Segment pairs, portfolio-wide</h4></div></div>
-    <table><thead><tr><th>Segment A</th><th>Segment B</th><th>Overlap</th><th>Min-size gate</th><th>Note</th></tr></thead><tbody>
-      <tr><td>C-suite decision-makers (DJ)</td><td>In-market · luxury auto (Realtor)</td><td class="mono">illustrative only</td><td><span class="tag ok">Passed</span></td><td class="idc">real % unverified — never quote externally</td></tr>
-      <tr><td>High-net-worth households (Realtor)</td><td>Small-business owners (DJ)</td><td class="mono">illustrative only</td><td><span class="tag ok">Passed</span></td><td class="idc">real % unverified — never quote externally</td></tr>
-      <tr><td>C-suite decision-makers (DJ)</td><td>High-net-worth households (Realtor)</td><td class="mono">illustrative only</td><td><span class="tag warn">Below threshold</span></td><td class="idc">too narrow to report at Tier A gate</td></tr>
-    </tbody></table>
-    <div class="hint">"The verified deterministic overlap between the two POC business units" is listed as an open question in the requirements doc — this table shows the reporting mechanism, not a real settled figure.</div>
-  </div>
-
-  <div class="grid g-3" style="margin-bottom:14px">
-    <div class="card">
-      <div class="kick" style="font-size:9px;color:var(--text-faint)">DJ PROGRAMMATIC ECPM</div>
-      <div class="display" style="font-size:26px;font-weight:700;margin:4px 0;color:var(--success)">$11.57</div>
-      <div style="font-size:11.5px;color:var(--text-soft)">vs. $0.24–$2.00 third-party floor — real, curated deals already outperform open auction</div>
-    </div>
-    <div class="card">
-      <div class="kick" style="font-size:9px;color:var(--text-faint)">REALTOR GAM↔CLICKSTREAM MATCH</div>
-      <div class="display" style="font-size:26px;font-weight:700;margin:4px 0">82.65%</div>
-      <div style="font-size:11.5px;color:var(--text-soft)">real, UTC-7 window — the identity-resolution rate the console is built on</div>
-    </div>
-    <div class="card">
-      <div class="kick" style="font-size:9px;color:var(--text-faint)">EXISTING BARTER — REALIZED YIELD</div>
-      <div class="display" style="font-size:26px;font-weight:700;margin:4px 0;color:var(--danger)">0.0–0.2%</div>
-      <div style="font-size:11.5px;color:var(--text-soft)">of receiving audience — 32 DJ cohorts already sit in Realtor's workspace, barely activated</div>
+      </div>
+      <div class="hint">Output is aggregate — rows are not additive (one impression carries many values, so summing exceeds the campaign total). Each BU controls which of its own attributes may be used.</div>
     </div>
   </div>
 
   <div class="card">
-    <div class="card-h"><div><div class="kick">Performance by destination class</div><h4>Where activated audiences actually deliver</h4></div></div>
-    <table><thead><tr><th>Destination</th><th>Delivered (30d)</th><th>Avg. match rate</th><th>Trend</th></tr></thead><tbody>
-      <tr><td>Xandr Curate</td><td>412K</td><td>94%</td><td><span class="tag ok">↑ stable</span></td></tr>
-      <tr><td>Permutive → GAM</td><td>288K</td><td>91%</td><td><span class="tag warn">batch delay</span></td></tr>
-      <tr><td>InfoSum Beacon (federated)</td><td>96K</td><td>—</td><td><span class="tag mute">insights only</span></td></tr>
-      <tr><td>BU lake / S3</td><td>640K</td><td>100%</td><td><span class="tag ok">↑ stable</span></td></tr>
-    </tbody></table>
+    <div class="card-h"><div><div class="kick">UC-B · Priority · Leads Insight, supports One meaning</div><h4>Portfolio analysis</h4></div>
+      <a class="link" href="#" onclick="document.getElementById('uc-b').style.display=document.getElementById('uc-b').style.display==='none'?'block':'none';return false">See mock ▾</a></div>
+    <p style="font-size:12.5px;color:var(--text-soft);margin:0">Same engine as UC-A, run across both BUs with no advertiser file — a portfolio answer instead of a campaign answer. Most valuable to retail media networks, smaller agencies and brands.</p>
+    <div id="uc-b" style="display:none;margin-top:14px;padding:14px;background:var(--surface-2);border-radius:8px">
+      <div class="filters" style="margin-bottom:10px"><span class="fchip active">Portfolio</span><span class="fchip">Dow Jones only</span><span class="fchip">Realtor only</span></div>
+      <table style="font-size:11.5px"><thead><tr><th>Untargeted key-value</th><th>DJ reach</th><th>Realtor reach</th><th>Min-size gate</th></tr></thead><tbody>
+        <tr><td class="idc">kv:executive</td><td>412K</td><td>188K</td><td><span class="tag ok">Passed</span></td></tr>
+        <tr><td class="idc">intent:auto_luxury</td><td>—</td><td>640K</td><td><span class="tag ok">Passed</span></td></tr>
+        <tr><td class="idc">kv:niche_hobby_x</td><td>2.1K</td><td>340</td><td><span class="tag bad">Suppressed — below threshold</span></td></tr>
+      </tbody></table>
+      <div class="hint">No BU-specific raw data in the output. Source and window stated on every figure.</div>
+    </div>
   </div>`;
 };
 
