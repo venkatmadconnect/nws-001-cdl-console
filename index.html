@@ -513,8 +513,12 @@
   <!-- SIDEBAR -->
   <div class="sidebar">
     <div class="nav-group">
+      <div class="g-label">POC</div>
+      <button class="nav-item active" data-t="v-usecases"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>Use Cases</button>
+    </div>
+    <div class="nav-group">
       <div class="g-label">Inspect</div>
-      <button class="nav-item active" data-t="v-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Profile Search</button>
+      <button class="nav-item" data-t="v-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Profile Search</button>
     </div>
     <div class="nav-group">
       <div class="g-label">Ingest — data in, made comparable</div>
@@ -1042,6 +1046,107 @@ function canManage(ownerBU){
    ============================================================ */
 const views = {};
 
+/* ---- Use Cases — the actual 6, A-F, per the finalized Aug 2026 deck ---- */
+views['v-usecases'] = () => `
+  <div class="ph"><div><div class="kick">POC · What gets demonstrated</div><h1>Use cases</h1>
+  <p>Six use cases, A through F. A–D are priority. E ships only if it doesn't disturb existing reporting. F is still awaiting a decision. Each card below is mock data showing how it actually behaves, not a description of it.</p></div></div>
+
+  <!-- UC-A -->
+  <div class="card" style="margin-bottom:14px">
+    <div class="card-h"><div><div class="kick">UC-A · Priority</div><h4>Measurement enrichment</h4></div><span class="tag ok">Lead: Insight</span></div>
+    <p style="font-size:12.5px;color:var(--text-soft);margin:0 0 12px">Advertiser sends a measurement file. It comes back enriched with untargeted key-value signal — joined on the campaign, not identity, so no user-level match is needed. Conversions and attribution are explicitly out of scope.</p>
+    <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">
+      <div style="flex:1;min-width:180px;border:1.5px dashed var(--border);border-radius:10px;padding:18px;text-align:center;color:var(--text-faint);font-size:12px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="width:22px;height:22px;margin-bottom:6px"><path d="M12 3v12M7 10l5 5 5-5M4 21h16"/></svg><br>
+        exposure_file_q3.csv<br><span style="color:var(--text-faint);font-size:10.5px">492,245 impressions</span>
+      </div>
+      <div style="color:var(--text-faint)">→</div>
+      <div style="flex:2;min-width:260px">
+        <table style="font-size:11.5px"><thead><tr><th>Key-value (untargeted)</th><th>Engagement uplift</th></tr></thead><tbody>
+          <tr><td class="idc">kv:executive</td><td><span class="tag ok">+18%</span></td></tr>
+          <tr><td class="idc">kv:section=Finance</td><td><span class="tag ok">+11%</span></td></tr>
+          <tr><td class="idc">kv:fantasy_football</td><td><span class="tag warn">+4%</span></td></tr>
+        </tbody></table>
+      </div>
+    </div>
+    <div class="hint">Output is aggregate — rows are not additive (one impression carries many values, so summing exceeds the campaign total). Each BU controls which of its own attributes may be used.</div>
+  </div>
+
+  <!-- UC-B -->
+  <div class="card" style="margin-bottom:14px">
+    <div class="card-h"><div><div class="kick">UC-B · Priority</div><h4>Portfolio analysis</h4></div><span class="tag ok">Lead: Insight · Support: One meaning</span></div>
+    <p style="font-size:12.5px;color:var(--text-soft);margin:0 0 12px">Same engine as UC-A, run across both BUs with no advertiser file — a portfolio answer instead of a campaign answer. Most valuable to retail media networks, smaller agencies and brands.</p>
+    <div class="filters" style="margin-bottom:10px"><span class="fchip active">Portfolio</span><span class="fchip">Dow Jones only</span><span class="fchip">Realtor only</span></div>
+    <table style="font-size:11.5px"><thead><tr><th>Untargeted key-value</th><th>DJ reach</th><th>Realtor reach</th><th>Min-size gate</th></tr></thead><tbody>
+      <tr><td class="idc">kv:executive</td><td>412K</td><td>188K</td><td><span class="tag ok">Passed</span></td></tr>
+      <tr><td class="idc">intent:auto_luxury</td><td>—</td><td>640K</td><td><span class="tag ok">Passed</span></td></tr>
+      <tr><td class="idc">kv:niche_hobby_x</td><td>2.1K</td><td>340</td><td><span class="tag bad">Suppressed — below threshold</span></td></tr>
+    </tbody></table>
+    <div class="hint">No BU-specific raw data in the output. Source and window stated on every figure.</div>
+  </div>
+
+  <!-- UC-C -->
+  <div class="card" style="margin-bottom:14px">
+    <div class="card-h"><div><div class="kick">UC-C · Priority</div><h4>Unified segment buys</h4></div><span class="tag ok">Lead: One meaning</span></div>
+    <p style="font-size:12.5px;color:var(--text-soft);margin:0 0 12px">One canonical definition, three buys: Realtor, Dow Jones, MS Curate. Motivated by three live "C-suite" definitions already sitting in one Permutive workspace, the largest 33× the smallest.</p>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:12px;background:var(--surface-2);border-radius:8px;border:1px solid var(--border);margin-bottom:12px">
+      <span class="fld" style="background:var(--primary-soft);color:var(--primary);border-color:rgba(61,139,255,.3)">JOB_TITLE in (CEO,CFO,COO,CMO,CTO)</span>
+      <span style="color:var(--text-faint);font-family:'JetBrains Mono';font-size:11px">→ evaluated per-BU</span>
+    </div>
+    <div class="grid g-3" style="margin-bottom:10px">
+      <div class="card" style="padding:12px"><div class="kick" style="font-size:9px">PERMUTIVE → GAM (DJ)</div><div class="display" style="font-size:20px;font-weight:700">412K</div><span class="lbl matched">Matched</span></div>
+      <div class="card" style="padding:12px"><div class="kick" style="font-size:9px">XANDR CURATE</div><div class="display" style="font-size:20px;font-weight:700">600K</div><span class="lbl matched">Matched</span></div>
+      <div class="card" style="padding:12px"><div class="kick" style="font-size:9px">BU LAKE / S3</div><div class="display" style="font-size:20px;font-weight:700">188K</div><span class="lbl modelled">Modelled</span></div>
+    </div>
+    <div class="hint">When one BU creates a definition, the other is told its name, size and availability, and can sell it — or decline to announce. Local BU taxonomies never change; unification happens only at this layer.</div>
+  </div>
+
+  <!-- UC-D -->
+  <div class="card" style="margin-bottom:14px">
+    <div class="card-h"><div><div class="kick">UC-D · Priority</div><h4>Planning export</h4></div><span class="tag ok">Lead: Custody · Support: Insight, One meaning</span></div>
+    <p style="font-size:12.5px;color:var(--text-soft);margin:0 0 12px">Portfolio data exported to a clean room for planning and overlap analysis. Federated — processing happens inside the agency's environment, nothing rests outside it.</p>
+    <div class="arow"><span class="k">Destination</span><span class="v">External systems (class) → InfoSum Beacon — first implementation, not the design</span></div>
+    <div class="arow"><span class="k">Usage</span><span class="tag ok">Stops short of licensing</span></div>
+    <div class="arow"><span class="k">Permissible-use envelope</span><span class="tag ok">Recorded per delivery</span></div>
+    <div class="hint">Source obfuscation on delivery, no raw personal data outbound. POC credibility must not rest on one vendor's quality.</div>
+  </div>
+
+  <!-- UC-E -->
+  <div class="card" style="margin-bottom:14px">
+    <div class="card-h"><div><div class="kick">UC-E · Conditional</div><h4>Audience variant testing</h4></div><span class="tag warn">Ships if it doesn't disturb existing reporting</span></div>
+    <p style="font-size:12.5px;color:var(--text-soft);margin:0 0 12px">Buyer specifies the method, not just the audience — deterministic at scale, or a probabilistic build with a stated confidence band — then compares both.</p>
+    <div class="grid g-2">
+      <div class="card" style="padding:14px;border-color:rgba(56,211,154,.3)">
+        <div class="kick" style="font-size:9px;color:var(--success)">DETERMINISTIC</div>
+        <div class="display" style="font-size:24px;font-weight:700;margin:4px 0">412K</div>
+        <div style="font-size:11.5px;color:var(--text-soft)">VXID exact match · JOB_TITLE = C-level</div>
+        <span class="lbl matched" style="margin-top:6px;display:inline-block">Matched</span>
+      </div>
+      <div class="card" style="padding:14px;border-color:rgba(176,108,246,.3)">
+        <div class="kick" style="font-size:9px;color:var(--ai)">PROBABILISTIC</div>
+        <div class="display" style="font-size:24px;font-weight:700;margin:4px 0">640K</div>
+        <div style="font-size:11.5px;color:var(--text-soft)">Permutive LAL · confidence 0.78</div>
+        <span class="lbl modelled" style="margin-top:6px;display:inline-block">Modelled</span>
+      </div>
+    </div>
+    <div class="hint">No proprietary modelling built — uses the identity partner's own capability. Dow Jones's WSJ × TransUnion lattice already does this labelling live today.</div>
+  </div>
+
+  <!-- UC-F -->
+  <div class="card">
+    <div class="card-h"><div><div class="kick">UC-F · Awaiting a decision</div><h4>Agentic endpoint</h4></div><span class="tag bad">Lead: One meaning · not yet approved</span></div>
+    <p style="font-size:12.5px;color:var(--text-soft);margin:0 0 12px">An agency agent sends a brief. A seller-side endpoint reads it, maps it to canonical definitions, and returns size, composition, availability and delivery options. It does not transact inventory.</p>
+    <div style="display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap">
+      <div style="flex:1;min-width:220px;padding:12px;background:var(--surface-2);border-radius:8px;border:1px solid var(--border);font-family:'JetBrains Mono';font-size:11.5px;color:var(--text-soft)">
+        "Find C-suite decision-makers reachable across News Corp, US only"
+      </div>
+      <div style="color:var(--text-faint);align-self:center">→</div>
+      <div style="flex:1;min-width:220px;padding:12px;background:var(--surface-2);border-radius:8px;border:1px solid var(--border);font-family:'JetBrains Mono';font-size:11.5px;color:var(--success)">
+        {"definition": "C-suite decision-makers", "size": 600000, "availability": ["Xandr Curate","Permutive→GAM"]}
+      </div>
+    </div>
+    <div class="hint">An unmatched brief resolves to a stated proxy definition rather than failing quietly. Min-size + throttling so nobody infers membership by querying repeatedly. Endpoint detail lives under ICL Connectors.</div>
+  </div>`;
 
 /* ---- Profile Search ---- */
 views['v-search'] = () => `
@@ -2174,7 +2279,7 @@ document.addEventListener('keydown', e=>{
 });
 
 document.documentElement.dataset.theme = 'dark';
-go('v-search');
+go('v-usecases');
 
 </script>
 </body>
