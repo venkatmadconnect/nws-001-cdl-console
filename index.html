@@ -145,6 +145,7 @@
   .lbl.modelled{background:var(--ai-soft);color:var(--ai);}
   .lbl.active{background:var(--primary-soft);color:var(--primary);}
   .lbl.insights{background:var(--warn-soft);color:var(--warn);}
+  .lbl.blocked{background:var(--danger-soft);color:var(--danger);}
   .ver{font-family:'JetBrains Mono';font-size:10px;color:var(--text-faint);}
 
   /* ===== Sidebar ===== */
@@ -859,19 +860,17 @@ const CUSTOMERS = {
     ]
   },
 
-  /* ---- Cross-BU match — rare, by design ----
-     The requirements doc lists "the verified deterministic overlap between the
-     two POC business units" as an OPEN QUESTION, not a solved fact — quoted
-     figures (25% / 30%+ / ~4.4% at tag layer) are unverified and withheld
-     externally. This record is a worked example of what a confirmed cross-BU
-     match actually looks like when the licensed spine finds one — not a claim
-     that this is common. Realtor-side identifiers are the real ones captured
-     in a live browser session (HAR): permutive-id, __vst, Adobe ECID (s_ecid),
-     Prebid TDID, LiveRamp Panorama, TransUnion tluid. */
+  /* ---- Cross-BU, same country — this is the NORMAL case, not the exception.
+     Dow Jones and Realtor.com are both US-only businesses on the same
+     licensed-spine mechanics, so a person showing up on both is expected,
+     not rare. What's genuinely hard — and explicitly Phase 2 / out of scope
+     in the requirements doc — is CROSS-REGION stitching (see cross_region
+     below). Realtor-side identifiers are the real ones captured in a live
+     browser session (HAR): permutive-id, __vst, Adobe ECID, Prebid TDID. */
   cross_bu: {
-    initials:'JC', name:'Jamie Chen', master:'Licensed spine · union match', loyalty:'Cross-BU · rare',
-    home:'Dow Jones + Realtor.com', updated:'Aug 8 partition', quality:91,
-    tags:[['us','Confirmed cross-BU'],['warn','Rare — not the general case'],['mute','Union match, deterministic']],
+    initials:'JC', name:'Jamie Chen', master:'Licensed spine · union match', loyalty:'Cross-BU · US',
+    home:'Dow Jones + Realtor.com', updated:'Aug 8 partition', quality:91, crossType:'bu',
+    tags:[['us','Cross-BU · both US'],['ok','Common — expected overlap'],['mute','Union match, deterministic']],
     attrs:{
       'Dow Jones (DEMOGRAPHIC_LOOKUP)':[
         ['JOB_TITLE','SVP, Finance','Dow Jones','c3'],
@@ -885,29 +884,78 @@ const CUSTOMERS = {
       ]
     },
     identifiers:[
-      ['VXID (Dow Jones)','vxid','a7f3-91c2 (hashed)','100','deterministic','var(--us)'],
-      ['News ID (Dow Jones)','newsid','nid_a7f3…','98.4','deterministic','var(--au)'],
-      ['permutive-id (Realtor)','puid','fe21ac28-618b-4785-b8e7-52c40a25ac08','100','deterministic','var(--uk)'],
-      ['__vst (Realtor)','vst','6aa48129-edfc-4519-97c2-346396a0b38e','100','deterministic','var(--us)'],
-      ['Adobe ECID (Realtor)','ecid','27749829667198561830671535615857738087','96.0','deterministic','var(--eu)'],
-      ['login_id + email_sha256 (Realtor)','login','53d7341e… + d037d5f8…','100','deterministic','var(--us)'],
-      ['TDID — Prebid/TTD (Realtor)','tdid','2a1cee32-b168-42f2-a881-18913b74a383','82.0','probabilistic','var(--warn)'],
-      ['Panorama ID — LiveRamp (Realtor)','panorama','(cookieless, hashed)','74.0','probabilistic','var(--danger)'],
-      ['tluid — TransUnion (Realtor)','tluid','(session-scoped)','80.0','probabilistic','var(--danger)']
+      ['VXID','vxid','a7f3-91c2 (hashed)','100','deterministic','var(--us)','dj'],
+      ['News ID','newsid','nid_a7f3…','98.4','deterministic','var(--au)','dj'],
+      ['PPID (GAM)','ppid','ppid_hashedvxid','98.0','deterministic','var(--eu)','dj'],
+      ['permutive-id','puid','fe21ac28-618b-4785-b8e7-52c40a25ac08','100','deterministic','var(--uk)','realtor'],
+      ['__vst','vst','6aa48129-edfc-4519-97c2-346396a0b38e','100','deterministic','var(--us)','realtor'],
+      ['Adobe ECID','ecid','27749829667198561830671535615857738087','96.0','deterministic','var(--eu)','realtor'],
+      ['login_id + email_sha256','login','53d7341e… + d037d5f8…','100','deterministic','var(--us)','realtor'],
+      ['TDID — Prebid/TTD','tdid','2a1cee32-b168-42f2-a881-18913b74a383','82.0','probabilistic','var(--warn)','realtor']
     ],
     segments:[['C-suite decision-makers','rt'],['In-market movers','rt'],['HNW households','bt']],
     lineage:[
       ['SF','Dow Jones · Snowflake DEMOGRAPHIC_LOOKUP','VXID-keyed row','ok','Primary · DJ'],
       ['PMV-DJ','Permutive (DJ workspace)','wraps VXID + News ID','ok','Matched · DJ'],
       ['PMV-RE','Permutive (Realtor workspace)','identify call: login_id + email_sha256 → user_id fe21ac28…, real HAR capture','ok','Matched · Realtor'],
-      ['SPINE','Licensed spine — union match','resolves DJ VXID ↔ Realtor permutive-id as one person','warn','Cross-BU — rare'],
+      ['SPINE','Licensed spine — union match','resolves DJ VXID ↔ Realtor permutive-id as one person, both US','ok','Cross-BU — expected'],
       ['ADB','Adobe Experience Cloud (Realtor)','ECID confirmed live via s_ecid cookie + adobe_id alias','ok','Corroborating signal']
+    ],
+    campaigns:[
+      ['Q3 Wealth Management Brand Study','Dow Jones only','Delivered','matched'],
+      ['Austin Metro New-Listing Alert','Realtor.com only','Delivered','matched'],
+      ['C-suite decision-makers — portfolio buy','Dow Jones + Realtor.com combined','Delivered via Xandr Curate','matched'],
+      ['HNW household — planning export','Combined, federated (InfoSum)','Insights only — not activated','modelled']
     ],
     timeline:[
       ['Aug 8, 11:00 UTC','Realtor session starts anonymous — visitor_id + adobe_id + pxid only'],
       ['Aug 8, 11:03 UTC','User logs in — Permutive identify upgrades to login_id + email_sha256 at priority 0'],
       ['Aug 8, 14:20 UTC','Licensed spine resolves this email hash against Dow Jones VXID a7f3-91c2 — union match'],
-      ['Flag','This union match is the exception, not the rule — portfolio-wide overlap is still an open, unverified question per the requirements doc']
+      ['Flag','Same-country cross-BU overlap like this is the expected case — this is what UC-C is built to serve']
+    ]
+  },
+
+  /* ---- Cross-REGION — this is the genuinely rare/hard one.
+     "Cross-region stitch for GDPR territories" is explicitly listed as
+     Out of Scope for the POC (Phase 2 only) in the requirements doc.
+     News Corp Australia's column-level schema isn't in the discovery
+     corpus yet (see Data Catalog), so its identifiers below are marked
+     illustrative, not verified real exports like the DJ/Realtor side. */
+  cross_region: {
+    initials:'AR', name:'Aiden Rourke', master:'No licensed cross-region stitch', loyalty:'Cross-region · blocked',
+    home:'Dow Jones (US) + News Corp Australia', updated:'not resolved', quality:0, crossType:'region',
+    tags:[['bad','Cross-region · US ↔ AU'],['warn','Rare — Phase 2, out of scope'],['mute','No union match today']],
+    attrs:{
+      'Dow Jones (US, real schema)':[
+        ['JOB_TITLE','Director, Strategy','Dow Jones','c3'],
+        ['NET_WORTH_RANGE','$500K–$1M','Dow Jones','c2']
+      ],
+      'News Corp Australia (illustrative — schema not yet documented)':[
+        ['subscription_tier','Digital, Premium (illustrative)','News Corp Australia','c3'],
+        ['engagement_score','illustrative only','News Corp Australia','c2']
+      ]
+    },
+    identifiers:[
+      ['VXID','vxid','b81c-22fa (hashed)','100','deterministic','var(--us)','dj'],
+      ['News ID','newsid','nid_b81c…','97.0','deterministic','var(--au)','dj'],
+      ['ActionIQ subscriber ID','aiq','illustrative — not verified','0','probabilistic','var(--danger)','nca'],
+      ['Mobian contextual session','mob','illustrative — not verified','0','probabilistic','var(--danger)','nca']
+    ],
+    segments:[['C-suite decision-makers','rt']],
+    lineage:[
+      ['SF','Dow Jones · Snowflake DEMOGRAPHIC_LOOKUP','VXID-keyed row','ok','Primary · DJ'],
+      ['AIQ','ActionIQ (News Corp Australia)','firewalled from commercial targeting by design','bad','No export path'],
+      ['SPINE','Licensed spine — cross-region','no stitch exists · GDPR-territory logic is Phase 2','bad','Blocked, not built']
+    ],
+    campaigns:[
+      ['Q3 Wealth Management Brand Study','Dow Jones only','Delivered','matched'],
+      ['AU subscriber renewal — News Corp Australia','News Corp Australia only','Delivered','matched'],
+      ['Combined US+AU wealth audience','—','Not possible — no cross-region stitch exists','blocked']
+    ],
+    timeline:[
+      ['Design note','Cross-region stitch for GDPR territories is explicitly Out of Scope for this POC'],
+      ['Design note','News Corp Australia column-level schema not yet in the discovery corpus — see Data Catalog'],
+      ['Flag','This record exists to show what does NOT work today — not a preview of a shipped feature']
     ]
   }
 };
@@ -979,9 +1027,15 @@ views['v-search'] = () => `
     </div>
   </div>
   <div class="chip-group">
-    <div class="chip-group-label" style="color:var(--warn)">Cross-BU match — rare, not the general case</div>
+    <div class="chip-group-label" style="color:var(--success)">Cross-BU (US) — common, expected overlap</div>
     <div class="chips">
-      <button class="chip" style="border-color:rgba(246,185,59,.4);color:var(--warn)" onclick="openProfile('cross_bu')">Jamie Chen · confirmed in both DJ + Realtor</button>
+      <button class="chip" style="border-color:rgba(56,211,154,.4);color:var(--success)" onclick="openProfile('cross_bu')">Jamie Chen · Dow Jones + Realtor.com</button>
+    </div>
+  </div>
+  <div class="chip-group">
+    <div class="chip-group-label" style="color:var(--danger)">Cross-region (US ↔ Australia) — rare, Phase 2</div>
+    <div class="chips">
+      <button class="chip" style="border-color:rgba(242,109,109,.4);color:var(--danger)" onclick="openProfile('cross_region')">Aiden Rourke · Dow Jones (US) + News Corp Australia</button>
     </div>
   </div>
 
@@ -1037,6 +1091,9 @@ function renderProfile(){
   const lineage = c.lineage.map(([s,n,d,st,tag])=>`<div class="lrow"><span class="lsys">${s}</span>
     <div class="lm"><div class="name">${n}</div><div class="ls">${d}</div></div><span class="tag ${st==='ok'?'ok':st==='warn'?'warn':'bad'}">${tag}</span></div>`).join('');
   const tl = c.timeline.map(([t,d])=>`<div class="tli"><div class="t">${t}</div><div class="d">${d}</div></div>`).join('');
+  const campaignsHtml = (c.campaigns||[]).map(([name,scope,status,lab])=>`
+    <tr><td>${name}</td><td class="idc">${scope}</td><td>${status}</td><td><span class="lbl ${lab}">${lab==='blocked'?'Blocked':lab==='matched'?'Matched':'Modelled'}</span></td></tr>
+  `).join('');
 
   const tags = c.tags.map(([cl,l])=>`<span class="tag ${cl}">${l}</span>`).join('');
 
@@ -1086,6 +1143,14 @@ function renderProfile(){
         <div class="tl">${tl}</div>
       </div>
     </div>
+    ${c.campaigns ? `
+    <div class="card" style="margin-top:14px">
+      <div class="card-h"><div><div class="kick">Media</div><h4>Campaign participation</h4></div></div>
+      <table><thead><tr><th>Campaign</th><th>Scope</th><th>Status</th><th>Label</th></tr></thead><tbody>
+        ${campaignsHtml}
+      </tbody></table>
+      <div class="hint">Scope shows whether the campaign ran on one BU alone or as a combined Dow Jones + Realtor.com buy — the combined rows are what UC-C's "one audience, three buys" actually delivers.</div>
+    </div>` : ''}
   `;
 }
 
@@ -1147,30 +1212,83 @@ views['v-graph'] = () => {
       <div class="nm"><div class="name">${nm} <span class="ns">ns: ${ns}</span></div><div class="val">${val}</div></div>
       <div><div class="conf" style="color:${good?'var(--success)':'var(--warn)'}">${cf}%</div><div style="text-align:right;margin-top:2px"><span class="lbl ${lab}">${lab==='matched'?'Matched':'Modelled'}</span></div></div></div>`;
   }).join('');
-  // build svg spokes
+
   const n = c.identifiers.length;
-  const cx=210, cy=185, R=125;
-  let spokes='', dots='';
-  c.identifiers.forEach((id,i)=>{
-    const a = (-Math.PI/2) + (i*2*Math.PI/n);
-    const x = cx + R*Math.cos(a), y = cy + R*Math.sin(a);
-    spokes += `<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="var(--border)" stroke-width="1.5"/>`;
-    dots += `<circle cx="${x}" cy="${y}" r="15" fill="${id[5]}"/>
-      <text x="${x}" y="${y+34}" text-anchor="middle" fill="var(--text-soft)" font-size="10" font-family="Inter">${id[0]}</text>`;
-  });
+  let svgBody;
+
+  if(c.crossType){
+    // Two-cluster layout: one hub per business unit, bridged in the middle.
+    const HUBS = {
+      dj:{label:'DOW JONES', short:'DJ'}, realtor:{label:'REALTOR.COM', short:'RE'}, nca:{label:'NEWS CORP AU', short:'AU'}
+    };
+    const order = c.crossType==='bu' ? ['realtor','dj'] : ['dj','nca'];
+    const groups = {}; order.forEach(k=>groups[k]=[]);
+    c.identifiers.forEach(id=>{ const bu = id[6] || order[0]; (groups[bu]||(groups[bu]=[])).push(id); });
+
+    const hubY = 190, hubR = 30, localR = 72;
+    const centers = { [order[0]]: 108, [order[1]]: 312 };
+    let spokes='', dots='', hubs='';
+
+    order.forEach(buKey=>{
+      const items = groups[buKey] || [];
+      const cx = centers[buKey], cy = hubY;
+      const m = items.length || 1;
+      items.forEach((id,i)=>{
+        const a = (-Math.PI/2) + (i*2*Math.PI/m);
+        const x = cx + localR*Math.cos(a), y = cy + localR*Math.sin(a);
+        spokes += `<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="var(--border)" stroke-width="1.5"/>`;
+        dots += `<circle cx="${x}" cy="${y}" r="13" fill="${id[5]}"/>
+          <text x="${x}" y="${y+30}" text-anchor="middle" fill="var(--text-soft)" font-size="9" font-family="Inter">${id[0]}</text>`;
+      });
+      const hub = HUBS[buKey] || {label:buKey.toUpperCase(), short:buKey.slice(0,2).toUpperCase()};
+      hubs += `<circle cx="${cx}" cy="${cy}" r="${hubR}" fill="url(#g1)"/>
+        <text x="${cx}" y="${cy-2}" text-anchor="middle" fill="#fff" font-size="9" font-family="JetBrains Mono">${hub.short}</text>
+        <text x="${cx}" y="${cy+42}" text-anchor="middle" fill="var(--text)" font-size="10.5" font-weight="600" font-family="Inter">${hub.label}</text>`;
+    });
+
+    const bridgeOk = c.crossType==='bu';
+    const bridgeColor = bridgeOk ? 'var(--success)' : 'var(--danger)';
+    const bridgeDash = bridgeOk ? '' : 'stroke-dasharray="6,5"';
+    const bridgeLabel = bridgeOk ? 'union match' : 'no stitch — blocked';
+    svgBody = `
+      <line x1="${centers[order[0]]+hubR}" y1="${hubY}" x2="${centers[order[1]]-hubR}" y2="${hubY}" stroke="${bridgeColor}" stroke-width="2.5" ${bridgeDash}/>
+      <text x="210" y="${hubY-14}" text-anchor="middle" fill="${bridgeColor}" font-size="9.5" font-family="JetBrains Mono">${bridgeLabel}</text>
+      ${spokes}${dots}${hubs}
+      <defs><linearGradient id="g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3D8BFF"/><stop offset="1" stop-color="#B06CF6"/></linearGradient></defs>`;
+  } else {
+    // Single-wheel layout for a normal, single-BU profile.
+    const cx=210, cy=185, R=125;
+    let spokes='', dots='';
+    c.identifiers.forEach((id,i)=>{
+      const a = (-Math.PI/2) + (i*2*Math.PI/n);
+      const x = cx + R*Math.cos(a), y = cy + R*Math.sin(a);
+      spokes += `<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="var(--border)" stroke-width="1.5"/>`;
+      dots += `<circle cx="${x}" cy="${y}" r="15" fill="${id[5]}"/>
+        <text x="${x}" y="${y+34}" text-anchor="middle" fill="var(--text-soft)" font-size="10" font-family="Inter">${id[0]}</text>`;
+    });
+    svgBody = `
+      ${spokes}
+      <circle cx="${cx}" cy="${cy}" r="27" fill="url(#g1)"/>
+      <text x="${cx}" y="${cy+4}" text-anchor="middle" fill="#fff" font-size="10" font-family="JetBrains Mono">MASTER</text>
+      ${dots}
+      <defs><linearGradient id="g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3D8BFF"/><stop offset="1" stop-color="#B06CF6"/></linearGradient></defs>`;
+  }
+
+  const crossNote = c.crossType==='bu'
+    ? `<div class="note info" style="margin-bottom:14px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg><span><b>Cross-BU, same country — this is the expected case, not an exception.</b> Dow Jones and Realtor.com are both US-only businesses on the same licensed-spine mechanics, so overlap like this is common. This is exactly what UC-C ("one audience, three buys") relies on.</span></div>`
+    : c.crossType==='region'
+    ? `<div class="note lock" style="margin-bottom:14px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z"/></svg><span><b>Cross-region is the genuinely rare/hard case.</b> "Cross-region stitch for GDPR territories" is explicitly Out of Scope for this POC (Phase 2 only). No union match exists between Dow Jones (US) and News Corp Australia today — the dashed red bridge shows a blocked link, not a working one.</span></div>`
+    : '';
+
   return `
   <div class="ph"><div><div class="kick">Identity · Graph</div><h1>Identity graph — ${c.name}</h1>
   <p>Identifiers resolved against the <b>licensed spine</b> — the layer builds none of its own. Each link is labelled Matched (deterministic) or Modelled, and the label travels with any audience built from it.</p></div>
   <a class="btn ghost" href="#" onclick="go('v-search');return false">← Back to profile</a></div>
-  ${state.customer==='cross_bu' ? `<div class="note lock" style="margin-bottom:14px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z"/></svg><span><b>This is a rare confirmed match, not the general case.</b> The verified deterministic overlap between Dow Jones and Realtor.com is still an open, unresolved question in the requirements doc — quoted figures (25% / 30%+ / ~4.4% at tag layer) are unverified and never quoted externally. This graph shows what one confirmed union match looks like when the licensed spine finds one.</span></div>` : ''}
+  ${crossNote}
   <div class="grid g-2-3">
     <div class="card" style="display:flex;align-items:center;justify-content:center;min-height:400px">
       <svg width="420" height="380" viewBox="0 0 420 380">
-        ${spokes}
-        <circle cx="${cx}" cy="${cy}" r="27" fill="url(#g1)"/>
-        <text x="${cx}" y="${cy+4}" text-anchor="middle" fill="#fff" font-size="10" font-family="JetBrains Mono">MASTER</text>
-        ${dots}
-        <defs><linearGradient id="g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3D8BFF"/><stop offset="1" stop-color="#B06CF6"/></linearGradient></defs>
+        ${svgBody}
       </svg>
     </div>
     <div>
