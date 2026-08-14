@@ -5,72 +5,198 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>NewsCorp · Unified Data Console</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Inter:wght@400;450;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Inter:wght@400;450;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600;700&family=Roboto:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#0C0F14;
-    --surface:#141922;
-    --surface-2:#1B212C;
-    --surface-3:#222A37;
-    --border:#28313F;
-    --border-soft:#1E2530;
-    --text:#E8EBF0;
-    --text-soft:#98A2B3;
-    --text-faint:#5C6675;
-    --primary:#3D8BFF;
-    --primary-soft:rgba(61,139,255,.14);
-    --ai:#B06CF6;
-    --ai-soft:rgba(176,108,246,.15);
-    --success:#38D39A;
-    --success-soft:rgba(56,211,154,.14);
-    --warn:#F6B93B;
-    --warn-soft:rgba(246,185,59,.14);
-    --danger:#F26D6D;
-    --danger-soft:rgba(242,109,109,.14);
-    --au:#C084FC; --us:#60A5FA; --uk:#2DD4BF; --eu:#F6B93B;
+    /* Default theme: Black on Light */
+    --bg:#F6F7F9;
+    --surface:#FFFFFF;
+    --surface-2:#F0F2F5;
+    --surface-3:#E4E7EC;
+    --border:#DADFE5;
+    --border-soft:#E8EAED;
+    --text:#111111;
+    --text-soft:#4B5563;
+    --text-faint:#8A93A0;
+    --primary:#2563EB;
+    --primary-soft:rgba(37,99,235,.10);
+    --ai:#7C4FE0;
+    --ai-soft:rgba(124,79,224,.10);
+    --success:#15803D;
+    --success-soft:rgba(21,128,61,.10);
+    --warn:#B45309;
+    --warn-soft:rgba(180,83,9,.10);
+    --danger:#DC2626;
+    --danger-soft:rgba(220,38,38,.10);
+    --au:#7C4FE0; --us:#2563EB; --uk:#0E9384; --eu:#B45309;
     --r:12px; --r-sm:8px;
+    --shadow:0 1px 3px rgba(20,25,34,.08);
+    --font-main:Inter,"IBM Plex Sans","Source Sans 3",Roboto,"Segoe UI",Arial,sans-serif;
+    color-scheme:light;
+    /* Semantic token aliases — same values, spec-named tokens for new markup */
+    --text-primary:var(--text);
+    --text-secondary:var(--text-soft);
+    --text-muted:var(--text-faint);
+    --text-on-accent:#FFFFFF;
+    --text-success:var(--success);
+    --text-warning:var(--warn);
+    --text-error:var(--danger);
+    --text-suppressed:var(--text-faint);
+  }
+
+  html[data-theme="dark"]{
+    --bg:#0B0F14;
+    --surface:#151B23;
+    --surface-2:#1D2632;
+    --surface-3:#252F3D;
+    --border:#303A48;
+    --border-soft:#212A36;
+    --text:#F8FAFC;
+    --text-soft:#AEB8C5;
+    --text-faint:#6B7686;
+    --primary:#60A5FA;
+    --primary-soft:rgba(96,165,250,.14);
+    --ai:#B18CF0;
+    --ai-soft:rgba(177,140,240,.15);
+    --success:#34D399;
+    --success-soft:rgba(52,211,153,.14);
+    --warn:#FBBF24;
+    --warn-soft:rgba(251,191,36,.14);
+    --danger:#F87171;
+    --danger-soft:rgba(248,113,113,.14);
+    --au:#C084FC; --us:#60A5FA; --uk:#2DD4BF; --eu:#FBBF24;
     --shadow:0 1px 2px rgba(0,0,0,.4);
     color-scheme:dark;
+    --text-on-accent:#0B0F14;
   }
-  /* Light mode — a full token remap, not a colour flip.
-     Own contrast ratios, elevation and accent shifts for light backgrounds. */
-  html[data-theme="light"]{
-    --bg:#F4F6F9;
-    --surface:#FFFFFF;
-    --surface-2:#F1F3F7;
-    --surface-3:#E6EAF0;
-    --border:#D8DDE6;
-    --border-soft:#E9ECF1;
-    --text:#141922;
-    --text-soft:#5A6472;
-    --text-faint:#8C95A3;
-    --primary:#2E7BF0;
-    --primary-soft:rgba(46,123,240,.10);
-    --ai:#8B44E0;
-    --ai-soft:rgba(139,68,224,.10);
-    --success:#199F72;
-    --success-soft:rgba(25,159,114,.12);
-    --warn:#B77A12;
-    --warn-soft:rgba(183,122,18,.12);
-    --danger:#D14545;
-    --danger-soft:rgba(209,69,69,.12);
-    --au:#8B44E0; --us:#2E7BF0; --uk:#0E9384; --eu:#B77A12;
-    --shadow:0 1px 3px rgba(20,25,34,.10);
-    color-scheme:light;
+
+  html[data-theme="newsroom-navy"]{
+    --bg:#EEF2F7; --surface:#FFFFFF; --surface-2:#E7ECF3; --surface-3:#DCE3ED;
+    --border:#CBD5E3; --border-soft:#DEE5EE;
+    --text:#10233F; --text-soft:#3E5674; --text-faint:#7C8CA3;
+    --primary:#174A7E; --primary-soft:rgba(23,74,126,.10);
+    --ai:#6D4AFF; --ai-soft:rgba(109,74,255,.10);
+    --success:#15803D; --success-soft:rgba(21,128,61,.10);
+    --warn:#B45309; --warn-soft:rgba(180,83,9,.10);
+    --danger:#DC2626; --danger-soft:rgba(220,38,38,.10);
+    --au:#6D4AFF; --us:#174A7E; --uk:#0E9384; --eu:#B45309;
+    --shadow:0 1px 3px rgba(16,35,63,.08); color-scheme:light;
   }
-  /* soft elevation on cards in light mode so the flat borders don't read as harsh */
-  html[data-theme="light"] .card,
-  html[data-theme="light"] .claim,
-  html[data-theme="light"] .fstage,
-  html[data-theme="light"] .ccard,
-  html[data-theme="light"] .conn{box-shadow:var(--shadow);}
-  html[data-theme="light"] .ai-drawer{box-shadow:-10px 0 40px rgba(20,25,34,.12);}
-  html[data-theme="light"] .ai-fab{box-shadow:0 8px 24px rgba(139,68,224,.28);}
+
+  html[data-theme="ocean-blue"]{
+    --bg:#EFF6FF; --surface:#FFFFFF; --surface-2:#E4EFFC; --surface-3:#D6E6FA;
+    --border:#C3D9F1; --border-soft:#DCE9F8;
+    --text:#172033; --text-soft:#495975; --text-faint:#8394AC;
+    --primary:#0072CE; --primary-soft:rgba(0,114,206,.10);
+    --ai:#7C4FE0; --ai-soft:rgba(124,79,224,.10);
+    --success:#15803D; --success-soft:rgba(21,128,61,.10);
+    --warn:#B45309; --warn-soft:rgba(180,83,9,.10);
+    --danger:#DC2626; --danger-soft:rgba(220,38,38,.10);
+    --au:#7C4FE0; --us:#0072CE; --uk:#0E9384; --eu:#B45309;
+    --shadow:0 1px 3px rgba(23,32,51,.08); color-scheme:light;
+  }
+
+  html[data-theme="slate"]{
+    --bg:#E9EEF3; --surface:#F8FAFC; --surface-2:#EDF1F5; --surface-3:#DFE5EB;
+    --border:#CBD3DC; --border-soft:#DDE3E9;
+    --text:#172033; --text-soft:#4A5769; --text-faint:#8892A0;
+    --primary:#315A7D; --primary-soft:rgba(49,90,125,.10);
+    --ai:#6D5BC7; --ai-soft:rgba(109,91,199,.10);
+    --success:#15803D; --success-soft:rgba(21,128,61,.10);
+    --warn:#B45309; --warn-soft:rgba(180,83,9,.10);
+    --danger:#DC2626; --danger-soft:rgba(220,38,38,.10);
+    --au:#6D5BC7; --us:#315A7D; --uk:#0E9384; --eu:#B45309;
+    --shadow:0 1px 3px rgba(23,32,51,.07); color-scheme:light;
+  }
+
+  html[data-theme="emerald-data"]{
+    --bg:#EFF8F3; --surface:#FFFFFF; --surface-2:#E4F2EA; --surface-3:#D5EBDF;
+    --border:#C0DDCC; --border-soft:#DBEEE3;
+    --text:#10251A; --text-soft:#3B5A48; --text-faint:#7B978A;
+    --primary:#087F5B; --primary-soft:rgba(8,127,91,.10);
+    --ai:#7C4FE0; --ai-soft:rgba(124,79,224,.10);
+    --success:#0E8F52; --success-soft:rgba(14,143,82,.10);
+    --warn:#B45309; --warn-soft:rgba(180,83,9,.10);
+    --danger:#DC2626; --danger-soft:rgba(220,38,38,.10);
+    --au:#7C4FE0; --us:#087F5B; --uk:#0E9384; --eu:#B45309;
+    --shadow:0 1px 3px rgba(16,37,26,.08); color-scheme:light;
+  }
+
+  html[data-theme="purple-intelligence"]{
+    --bg:#F5F1FF; --surface:#FFFFFF; --surface-2:#ECE5FC; --surface-3:#DFD4FA;
+    --border:#CBB9F0; --border-soft:#E2D8FA;
+    --text:#211638; --text-soft:#4B3D6B; --text-faint:#8A7DAA;
+    --primary:#6D4AFF; --primary-soft:rgba(109,74,255,.10);
+    --ai:#8B44E0; --ai-soft:rgba(139,68,224,.10);
+    --success:#15803D; --success-soft:rgba(21,128,61,.10);
+    --warn:#B45309; --warn-soft:rgba(180,83,9,.10);
+    --danger:#DC2626; --danger-soft:rgba(220,38,38,.10);
+    --au:#8B44E0; --us:#6D4AFF; --uk:#0E9384; --eu:#B45309;
+    --shadow:0 1px 3px rgba(33,22,56,.08); color-scheme:light;
+  }
+
+  html[data-theme="warm-light"]{
+    --bg:#F7F4EE; --surface:#FFFEFB; --surface-2:#F0EBE0; --surface-3:#E4DCCC;
+    --border:#D9CDB8; --border-soft:#E9E2D3;
+    --text:#1F1D1A; --text-soft:#5B534A; --text-faint:#948B7E;
+    --primary:#9A4D22; --primary-soft:rgba(154,77,34,.10);
+    --ai:#7C4FE0; --ai-soft:rgba(124,79,224,.10);
+    --success:#15803D; --success-soft:rgba(21,128,61,.10);
+    --warn:#B45309; --warn-soft:rgba(180,83,9,.10);
+    --danger:#C0392B; --danger-soft:rgba(192,57,43,.10);
+    --au:#7C4FE0; --us:#9A4D22; --uk:#0E9384; --eu:#B45309;
+    --shadow:0 1px 3px rgba(31,29,26,.08); color-scheme:light;
+  }
+
+  html[data-theme="graphite"]{
+    --bg:#20242B; --surface:#2A3039; --surface-2:#323A45; --surface-3:#3B4450;
+    --border:#454F5C; --border-soft:#2E3641;
+    --text:#F5F7FA; --text-soft:#B7C0CC; --text-faint:#727C89;
+    --primary:#5CC8FF; --primary-soft:rgba(92,200,255,.14);
+    --ai:#B18CF0; --ai-soft:rgba(177,140,240,.15);
+    --success:#34D399; --success-soft:rgba(52,211,153,.14);
+    --warn:#FBBF24; --warn-soft:rgba(251,191,36,.14);
+    --danger:#F87171; --danger-soft:rgba(248,113,113,.14);
+    --au:#C084FC; --us:#5CC8FF; --uk:#2DD4BF; --eu:#FBBF24;
+    --shadow:0 1px 2px rgba(0,0,0,.35); color-scheme:dark;
+    --text-on-accent:#20242B;
+  }
+
+  html[data-theme="high-contrast"]{
+    --bg:#FFFFFF; --surface:#FFFFFF; --surface-2:#F2F2F2; --surface-3:#E2E2E2;
+    --border:#000000; --border-soft:#000000;
+    --text:#000000; --text-soft:#000000; --text-faint:#333333;
+    --primary:#0047FF; --primary-soft:rgba(0,71,255,.12);
+    --ai:#5B00CC; --ai-soft:rgba(91,0,204,.12);
+    --success:#006622; --success-soft:rgba(0,102,34,.12);
+    --warn:#8A5200; --warn-soft:rgba(138,82,0,.12);
+    --danger:#B30000; --danger-soft:rgba(179,0,0,.12);
+    --au:#5B00CC; --us:#0047FF; --uk:#006622; --eu:#8A5200;
+    --shadow:none; color-scheme:light;
+  }
+  html[data-theme="high-contrast"] .card,
+  html[data-theme="high-contrast"] .conn,
+  html[data-theme="high-contrast"] .fstage,
+  html[data-theme="high-contrast"] .ccard{border-width:2px;}
+  html[data-theme="high-contrast"] *:focus-visible{outline:3px solid var(--primary);outline-offset:2px;}
+
+  /* soft elevation on cards for light-background themes so flat borders don't read as harsh */
+  html:not([data-theme="dark"]):not([data-theme="graphite"]):not([data-theme="high-contrast"]) .card,
+  html:not([data-theme="dark"]):not([data-theme="graphite"]):not([data-theme="high-contrast"]) .claim,
+  html:not([data-theme="dark"]):not([data-theme="graphite"]):not([data-theme="high-contrast"]) .fstage,
+  html:not([data-theme="dark"]):not([data-theme="graphite"]):not([data-theme="high-contrast"]) .ccard,
+  html:not([data-theme="dark"]):not([data-theme="graphite"]):not([data-theme="high-contrast"]) .conn{box-shadow:var(--shadow);}
+  html[data-theme="dark"] .ai-drawer, html[data-theme="graphite"] .ai-drawer{box-shadow:-10px 0 40px rgba(0,0,0,.35);}
+  html:not([data-theme="dark"]):not([data-theme="graphite"]) .ai-drawer{box-shadow:-10px 0 40px rgba(20,25,34,.12);}
+  .ai-fab{box-shadow:0 8px 24px rgba(124,79,224,.28);}
+
+  *:focus-visible{outline:2px solid var(--primary);outline-offset:2px;border-radius:4px;}
+
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;height:100%;}
   body{
-    background:var(--bg);color:var(--text);
-    font-family:'Inter',system-ui,sans-serif;font-size:13.5px;line-height:1.5;
+    background:var(--bg);color:var(--text-primary);
+    font-family:var(--font-main);font-size:13.5px;line-height:1.5;
     -webkit-font-smoothing:antialiased;
   }
   .mono{font-family:'JetBrains Mono',monospace;}
@@ -80,6 +206,33 @@
   ::-webkit-scrollbar{width:9px;height:9px;}
   ::-webkit-scrollbar-thumb{background:var(--surface-3);border-radius:6px;}
   ::-webkit-scrollbar-track{background:transparent;}
+
+  /* ===== Typography hierarchy ===== */
+  h1{font-size:32px;font-weight:700;margin:0;line-height:1.25;}
+  h4{font-size:18px;font-weight:600;margin:0;line-height:1.3;}
+  p{font-size:15px;font-weight:400;line-height:1.6;color:var(--text-secondary);}
+  .btn, button.btn{font-size:14px;font-weight:600;}
+  table thead th{font-size:13px;font-weight:600;}
+  .kick, .g-label, label{font-size:12.5px;font-weight:500;}
+  .card-h h4{font-size:18px;font-weight:600;}
+
+  /* ===== Interface density ===== */
+  html[data-density="compact"] .card{padding:12px 14px;}
+  html[data-density="compact"] .arow{padding:5px 0;}
+  html[data-density="compact"] .ph{margin-bottom:12px;}
+  html[data-density="compact"] table td, html[data-density="compact"] table th{padding:6px 8px;}
+  html[data-density="compact"] .grid{gap:10px;}
+  html:not([data-density="compact"]) .card{padding:18px 20px;}
+
+  /* ===== Reduce motion ===== */
+  html[data-motion="reduce"] *, html[data-motion="reduce"] *::before, html[data-motion="reduce"] *::after{
+    transition:none !important; animation:none !important;
+  }
+
+  /* ===== Font size (applied via zoom on main content) ===== */
+  .main{zoom:1;}
+  html[data-fontsize="small"] .main{zoom:0.92;}
+  html[data-fontsize="large"] .main{zoom:1.12;}
 
   .shell{display:grid;grid-template-columns:238px 1fr;grid-template-rows:56px 1fr;height:100vh;}
 
@@ -137,9 +290,15 @@
   .theme-toggle{width:32px;height:32px;border-radius:8px;border:1px solid var(--border);background:var(--bg);display:flex;align-items:center;justify-content:center;color:var(--text-soft);transition:color .15s,border-color .15s;}
   .theme-toggle:hover{color:var(--text);border-color:var(--primary);}
   .theme-toggle svg{width:16px;height:16px;}
-  .theme-toggle .ico-sun{display:none;}
-  html[data-theme="light"] .theme-toggle .ico-moon{display:none;}
-  html[data-theme="light"] .theme-toggle .ico-sun{display:block;}
+  .seg-pills{display:flex;gap:6px;}
+  .seg-pills button{flex:1;padding:6px 0;font-size:11.5px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--text-soft);}
+  .seg-pills button.active{background:var(--primary);color:var(--text-on-accent);border-color:var(--primary);font-weight:600;}
+  .theme-swatch{border:2px solid var(--border);border-radius:8px;padding:0;cursor:pointer;overflow:hidden;height:38px;position:relative;}
+  .theme-swatch.active{border-color:var(--primary);}
+  .theme-swatch .sw-bg{position:absolute;inset:0;}
+  .theme-swatch .sw-card{position:absolute;left:15%;top:20%;right:15%;bottom:35%;border-radius:2px;}
+  .theme-swatch .sw-accent{position:absolute;left:15%;bottom:14%;width:30%;height:14%;border-radius:2px;}
+  .theme-swatch .sw-text{position:absolute;right:15%;bottom:14%;width:20%;height:14%;border-radius:2px;}
   .lbl{font-family:'JetBrains Mono';font-size:9px;font-weight:600;padding:2px 6px;border-radius:4px;letter-spacing:.02em;}
   .lbl.matched{background:var(--success-soft);color:var(--success);}
   .lbl.modelled{background:var(--ai-soft);color:var(--ai);}
@@ -502,10 +661,48 @@
           <div class="notif-item"><span class="dot ok"></span><div><b>Small-business owners v4</b> definition change approved by Dow Jones<div class="notif-t">Yesterday</div></div></div>
         </div>
       </div>
-      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Toggle light / dark">
-        <svg class="ico-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z"/></svg>
-        <svg class="ico-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5L19 19M19 5l-1.5 1.5M6.5 17.5L5 19"/></svg>
-      </button>
+      <div class="notif-wrap">
+        <button class="theme-toggle" id="appearanceBtn" onclick="toggleAppearance()" title="Appearance">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 21a9 9 0 100-18c-4 0-6 3-6 6 0 1 1 2 2 2h1a2 2 0 012 2v1c0 1 1 2 2 2h1c1 0 2 1 2 2s0 3 3 3z"/></svg>
+        </button>
+        <div class="notif-panel" id="appearancePanel" style="width:320px">
+          <div class="notif-h">Appearance<a href="#" onclick="resetAppearance();return false" class="link" style="font-size:10.5px">Reset to default</a></div>
+          <div style="padding:12px 14px;border-bottom:1px solid var(--border-soft)">
+            <div class="kick" style="margin-bottom:8px">Colour theme</div>
+            <div id="themeSwatches" style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px"></div>
+          </div>
+          <div style="padding:12px 14px;border-bottom:1px solid var(--border-soft)">
+            <div class="kick" style="margin-bottom:6px">Font family</div>
+            <select id="fontSel" onchange="setFont(this.value)" style="width:100%;padding:7px 8px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:12px">
+              <option value="inter">Inter (default)</option>
+              <option value="plex">IBM Plex Sans</option>
+              <option value="source">Source Sans 3</option>
+              <option value="roboto">Roboto</option>
+              <option value="segoe">Segoe UI</option>
+              <option value="system">System Default</option>
+            </select>
+          </div>
+          <div style="padding:12px 14px;border-bottom:1px solid var(--border-soft)">
+            <div class="kick" style="margin-bottom:6px">Font size</div>
+            <div class="seg-pills" id="fontSizePills">
+              <button data-v="small" onclick="setFontSize('small')">Small</button>
+              <button data-v="medium" onclick="setFontSize('medium')" class="active">Medium</button>
+              <button data-v="large" onclick="setFontSize('large')">Large</button>
+            </div>
+          </div>
+          <div style="padding:12px 14px;border-bottom:1px solid var(--border-soft)">
+            <div class="kick" style="margin-bottom:6px">Interface density</div>
+            <div class="seg-pills" id="densityPills">
+              <button data-v="comfortable" onclick="setDensity('comfortable')" class="active">Comfortable</button>
+              <button data-v="compact" onclick="setDensity('compact')">Compact</button>
+            </div>
+          </div>
+          <div style="padding:10px 14px">
+            <div class="arow"><span class="k" style="font-size:11.5px">High-contrast mode</span><label class="toggle"><input type="checkbox" id="hcToggle" onchange="toggleHighContrast(this.checked)"><span class="slider"></span></label></div>
+            <div class="arow"><span class="k" style="font-size:11.5px">Reduce motion</span><label class="toggle"><input type="checkbox" id="motionToggle" onchange="toggleReduceMotion(this.checked)"><span class="slider"></span></label></div>
+          </div>
+        </div>
+      </div>
       <div class="avatar" title="Venkat Ramanan">VR</div>
     </div>
   </div>
@@ -534,7 +731,7 @@
       <div class="g-label">Activate — what leaves</div>
       <button class="nav-item" data-t="v-activation"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>Activation</button>
       <button class="nav-item" data-t="v-connectors"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 2l4 4-4 4M3 11V9a4 4 0 014-4h14M7 22l-4-4 4-4M21 13v2a4 4 0 01-4 4H3"/></svg>ICL Connectors</button>
-      <button class="nav-item" data-t="v-planning"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>Planning &amp; Agentic Endpoint</button>
+      <button class="nav-item" data-t="v-planning"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>MCP Endpoints</button>
     </div>
     <div class="nav-group">
       <div class="g-label">Reporting</div>
@@ -1676,6 +1873,18 @@ views['v-activation'] = () => `
     </div>
   </div>
 
+  <div class="card" id="planning-export-card" style="margin-bottom:14px;scroll-margin-top:20px">
+    <div class="card-h"><div><div class="kick">UC-D · Planning Export</div><h4>Q4_Cross_Property_Audience_Plan</h4></div><span class="tag ok">Ready to activate</span></div>
+    <div class="arow"><span class="k">Export name</span><span class="v mono">Q4_Cross_Property_Audience_Plan</span></div>
+    <div class="arow"><span class="k">Selected properties</span><span class="v">Dow Jones, Realtor</span></div>
+    <div class="arow"><span class="k">Audience size</span><span class="v mono">4,250,000 users</span></div>
+    <div class="arow"><span class="k">Destination</span><span class="v">Activation workspace</span></div>
+    <div class="arow"><span class="k">File format</span><span class="v">CSV</span></div>
+    <div class="arow"><span class="k">Validation status</span><span class="tag ok">Passed — min-size + source obfuscation checked</span></div>
+    <div class="arow"><span class="k">Last updated</span><span class="v mono">Aug 14, 2026 · 09:42</span></div>
+    <div style="margin-top:12px"><button class="btn" ${RBAC[state.role].activate?'':'disabled'}>Activate Audience</button></div>
+  </div>
+
   <div class="card">
     <div class="card-h"><div><div class="kick">Recent pushes</div><h4>Definition → destination</h4></div></div>
     <table><thead><tr><th>Definition</th><th>Destination class</th><th>Label</th><th>Status gate</th><th>Consent gate</th><th>Delivery</th></tr></thead><tbody>
@@ -1816,37 +2025,33 @@ views['v-connectors'] = () => {
   <div class="conn-grid">
     ${conns.map(([n,s,st])=>`<div class="conn"><div class="ci">${n[0]}</div><div><div class="cn">${n}</div><div class="cs"><span class="dot ${st}"></span>${s}</div></div></div>`).join('')}
   </div>
-  <div class="note info" style="margin-top:12px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg><span>MCP endpoint and agentic buyer counterparties live on <a class="link" href="#" onclick="go('v-planning');return false">Planning &amp; Agentic Endpoint →</a>, not here — this screen is just the system/vendor connector map.</span></div>
+  <div class="note info" style="margin-top:12px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg><span>MCP endpoint and agentic buyer counterparties live on <a class="link" href="#" onclick="go('v-planning');return false">MCP Endpoints →</a>, not here — this screen is just the system/vendor connector map.</span></div>
   <div class="hint" style="margin-top:12px">Permutive has no API — every activation to it is a storage write that Permutive ingests on its own schedule, not a real-time call. This is the batch leg that needs proving end-to-end.</div>`;
 };
 
 /* ---- Planning & Agentic Endpoint — UC-D + the MCP mechanism, under Activate ---- */
 views['v-planning'] = () => `
-  <div class="ph"><div><div class="kick">Activate · What leaves</div><h1>Planning &amp; agentic endpoint</h1>
-  <p>Two things that leave the estate without a media buy attached: a clean-room export for planning, and a governed answer to an agent's question. Neither belongs inside Activation's destination-class mechanics or the Connectors' vendor map — both get their own home here.</p></div></div>
-
-  <div class="card" style="margin-bottom:14px">
-    <div class="card-h"><div><div class="kick">UC-D · Priority</div><h4>Planning export</h4></div><span class="tag ok">Lead: Custody · Support: Insight, One meaning</span></div>
-    <p style="font-size:12.5px;color:var(--text-soft);margin:0 0 12px">Portfolio data exported to a clean room for planning and overlap analysis. Federated — processing happens inside the agency's environment, nothing rests outside it.</p>
-    <div class="arow"><span class="k">Destination</span><span class="v">External systems (class) → InfoSum Beacon — first implementation, not the design</span></div>
-    <div class="arow"><span class="k">Model 1 — reach &amp; frequency planning</span><span class="tag ok">Allowed</span></div>
-    <div class="arow"><span class="k">Model 2 — overlap / dedup analysis</span><span class="tag ok">Allowed</span></div>
-    <div class="arow"><span class="k">Model 3 — predictive licensing pattern</span><span class="tag bad">Blocked — reads as data licensing</span></div>
-    <div class="hint">Usage stops short of licensing. Source obfuscation on delivery, no raw personal data outbound. A permissible-use envelope is recorded per delivery. POC credibility must not rest on one vendor's quality — InfoSum is the first implementation, not the design.</div>
-  </div>
+  <div class="ph"><div><div class="kick">Activate · What leaves</div><h1>MCP endpoints</h1>
+  <p>A governed answer to an agent's question — the agentic path that leaves the estate without a media buy attached. Lives here, under Activate → What Leaves, not inside the Planning Export card, not inside general Activation content, and not inside ICL Connectors.</p></div></div>
 
   <div class="card" style="margin-bottom:14px">
     <div class="card-h"><div><div class="kick">UC-F · Awaiting a decision</div><h4>Agentic endpoint</h4></div><span class="tag bad">Not yet approved</span></div>
     <p style="font-size:12.5px;color:var(--text-soft);margin:0 0 12px">An agency agent sends a brief. A seller-side endpoint reads it, maps it to canonical definitions, and returns size, composition, availability and delivery options. It does not transact inventory.</p>
-    <div style="display:flex;gap:10px;align-items:center;padding:12px 14px;background:var(--surface-2);border-radius:8px;border:1px solid var(--border);margin-bottom:12px">
+    <div style="display:flex;gap:10px;align-items:center;padding:12px 14px;background:var(--surface-2);border-radius:8px;border:1px solid var(--border);margin-bottom:14px">
       <span class="mono" style="font-size:12px;color:var(--text-soft)">mcp.icl.madconnect.io/nws-001/v1</span>
       <span class="tag mute" style="margin-left:auto">stdio / SSE</span>
     </div>
-    <div class="arow"><span class="k">Protocol</span><span class="v">MCP over AdCP (Agentic Commerce Protocol) brief format</span></div>
-    <div class="arow"><span class="k">Exposed tools</span><span class="v mono" style="font-size:11px">list_definitions · size_audience · check_availability</span></div>
-    <div class="arow"><span class="k">Auth</span><span class="v">Agency-tier OAuth token, scoped to source-BU approved definitions only</span></div>
-    <div class="arow"><span class="k">Returns</span><span class="v">Size + composition + availability only — no raw records, no direct buy</span></div>
-    <div style="display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap;margin-top:12px">
+
+    <table style="font-size:12px"><thead><tr><th>Endpoint</th><th>Method</th><th>Purpose</th></tr></thead><tbody>
+      <tr><td class="mono">/mcp/audiences/export</td><td><span class="tag ok">POST</span></td><td>Export an approved audience</td></tr>
+      <tr><td class="mono">/mcp/activation/status/{id}</td><td><span class="tag mute">GET</span></td><td>Check activation status</td></tr>
+      <tr><td class="mono">/mcp/destinations</td><td><span class="tag mute">GET</span></td><td>List supported destinations</td></tr>
+      <tr><td class="mono">/mcp/definitions</td><td><span class="tag mute">GET</span></td><td>List canonical definitions available to this agent</td></tr>
+      <tr><td class="mono">/mcp/audiences/size</td><td><span class="tag ok">POST</span></td><td>Size a brief against canonical definitions</td></tr>
+    </tbody></table>
+    <div class="hint" style="margin-top:10px">Auth: Agency-tier OAuth token, scoped to source-BU approved definitions only. Returns size + composition + availability only — no raw records, no direct buy.</div>
+
+    <div style="display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap;margin-top:14px">
       <div style="flex:1;min-width:220px;padding:12px;background:var(--surface-2);border-radius:8px;border:1px solid var(--border);font-family:'JetBrains Mono';font-size:11.5px;color:var(--text-soft)">
         "Find C-suite decision-makers reachable across News Corp, US only"
       </div>
@@ -1881,41 +2086,53 @@ views['v-reporting'] = () => {
   }
   return `
   <div class="ph"><div><div class="kick">Reporting · System-wide · Cross-cutting</div><h1>Reporting</h1>
-  <p>Per the deck: this is one of <b>12 capabilities, not 9</b> — UX, Reporting, and Security cut across the Ingest/Govern/Activate flow rather than sitting inside any one stage of it. The two use cases that live here — Measurement enrichment and Portfolio analysis — run the same untargeted key-value engine, with or without an advertiser file.</p></div></div>
+  <p>Per the deck: this is one of <b>12 capabilities, not 9</b> — UX, Reporting, and Security cut across the Ingest/Govern/Activate flow rather than sitting inside any one stage of it.</p></div></div>
 
   <div class="card" style="margin-bottom:14px">
-    <div class="card-h"><div><div class="kick">UC-A · Priority · Leads Insight</div><h4>Measurement enrichment</h4></div>
+    <div class="card-h"><div><div class="kick">UC-A · Priority · Leads Insight</div><h4>Measurement Enrichment</h4></div>
       <a class="link" href="#" onclick="document.getElementById('uc-a').style.display=document.getElementById('uc-a').style.display==='none'?'block':'none';return false">See mock ▾</a></div>
-    <p style="font-size:12.5px;color:var(--text-soft);margin:0">Advertiser sends a measurement file. It comes back enriched with untargeted key-value signal — joined on the campaign, not identity, so no user-level match is needed. Conversions and attribution are explicitly out of scope.</p>
-    <div id="uc-a" style="display:none;margin-top:14px;padding:14px;background:var(--surface-2);border-radius:8px">
-      <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">
-        <div style="flex:1;min-width:170px;border:1.5px dashed var(--border);border-radius:10px;padding:14px;text-align:center;color:var(--text-faint);font-size:11.5px">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="width:20px;height:20px;margin-bottom:6px"><path d="M12 3v12M7 10l5 5 5-5M4 21h16"/></svg><br>
-          exposure_file_q3.csv<br><span style="font-size:10px">492,245 impressions</span></div>
-        <div style="color:var(--text-faint)">→</div>
-        <table style="font-size:11.5px;flex:2"><thead><tr><th>Key-value (untargeted)</th><th>Engagement uplift</th></tr></thead><tbody>
-          <tr><td class="idc">kv:executive</td><td><span class="tag ok">+18%</span></td></tr>
-          <tr><td class="idc">kv:section=Finance</td><td><span class="tag ok">+11%</span></td></tr>
-          <tr><td class="idc">kv:fantasy_football</td><td><span class="tag warn">+4%</span></td></tr>
-        </tbody></table>
+    <p style="font-size:12.5px;color:var(--text-soft);margin:0">Advertiser sends a measurement file. It comes back enriched with untargeted key-value signal — joined on the campaign, not identity, so no user-level match is needed.</p>
+    <div id="uc-a" style="display:none;margin-top:14px;padding:14px;background:var(--surface-2);border-radius:8px;transition:all .22s ease">
+      <div style="border:1.5px dashed var(--border);border-radius:10px;padding:18px;text-align:center;color:var(--text-soft);font-size:12.5px;margin-bottom:14px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="width:22px;height:22px;margin-bottom:8px;color:var(--text-faint)"><path d="M12 3v12M7 10l5 5 5-5M4 21h16"/></svg><br>
+        <b style="color:var(--text)">Drop a measurement file here</b><br>
+        <span style="font-size:11px;color:var(--text-faint)">Supported formats: CSV, XLSX, and Parquet</span><br>
+        <span class="mono" style="font-size:11px;color:var(--primary)">campaign_measurement_aug_2026.csv</span>
       </div>
-      <div class="hint">Output is aggregate — rows are not additive (one impression carries many values, so summing exceeds the campaign total). Each BU controls which of its own attributes may be used.</div>
+      <table style="font-size:12px"><thead><tr><th>Measurement</th><th style="text-align:right">Before Enrichment</th><th style="text-align:right">After Enrichment</th><th style="text-align:right">Uplift</th></tr></thead><tbody>
+        <tr><td>Matched customer IDs</td><td style="text-align:right" class="mono">1,850,000</td><td style="text-align:right" class="mono">2,294,000</td><td style="text-align:right"><span class="tag ok">+24.0%</span></td></tr>
+        <tr><td>Measurable impressions</td><td style="text-align:right" class="mono">6,200,000</td><td style="text-align:right" class="mono">7,502,000</td><td style="text-align:right"><span class="tag ok">+21.0%</span></td></tr>
+        <tr><td>Attributed conversions</td><td style="text-align:right" class="mono">18,420</td><td style="text-align:right" class="mono">21,736</td><td style="text-align:right"><span class="tag ok">+18.0%</span></td></tr>
+        <tr><td>Match rate</td><td style="text-align:right" class="mono">62.5%</td><td style="text-align:right" class="mono">77.5%</td><td style="text-align:right"><span class="tag ok">+15.0 pts</span></td></tr>
+      </tbody></table>
+      <div class="hint">Expected result after the uploaded measurement file is enriched. Output is aggregate — rows are not additive.</div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:14px">
+    <div class="card-h"><div><div class="kick">UC-B · Priority · Leads Insight, supports One meaning</div><h4>Portfolio Analysis</h4></div>
+      <a class="link" href="#" onclick="document.getElementById('uc-b').style.display=document.getElementById('uc-b').style.display==='none'?'block':'none';return false">See mock ▾</a></div>
+    <p style="font-size:12.5px;color:var(--text-soft);margin:0">Same engine as UC-A, run across both BUs with no advertiser file — a portfolio answer instead of a campaign answer.</p>
+    <div id="uc-b" style="display:none;margin-top:14px;padding:14px;background:var(--surface-2);border-radius:8px;transition:all .22s ease">
+      <table style="font-size:12px"><thead><tr><th>Portfolio</th><th>Audience</th><th style="text-align:right">Reach</th><th>Status</th></tr></thead><tbody>
+        <tr><td>Dow Jones</td><td>Financial Decision-Makers</td><td style="text-align:right" class="mono">8,420,000</td><td><span class="tag ok">Available</span></td></tr>
+        <tr><td>Realtor</td><td>Active Home Buyers</td><td style="text-align:right" class="mono">6,850,000</td><td><span class="tag ok">Available</span></td></tr>
+        <tr style="opacity:.55"><td>News UK</td><td>Emerging High-Value Audience</td><td style="text-align:right" class="mono">—</td>
+          <td><span class="tag mute"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:11px;height:11px;vertical-align:-1px;margin-right:3px"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>Suppressed – below privacy threshold</span></td></tr>
+      </tbody></table>
+      <div class="hint">No numeric value is shown for a suppressed audience. Source and window stated on every figure.</div>
     </div>
   </div>
 
   <div class="card">
-    <div class="card-h"><div><div class="kick">UC-B · Priority · Leads Insight, supports One meaning</div><h4>Portfolio analysis</h4></div>
-      <a class="link" href="#" onclick="document.getElementById('uc-b').style.display=document.getElementById('uc-b').style.display==='none'?'block':'none';return false">See mock ▾</a></div>
-    <p style="font-size:12.5px;color:var(--text-soft);margin:0">Same engine as UC-A, run across both BUs with no advertiser file — a portfolio answer instead of a campaign answer. Most valuable to retail media networks, smaller agencies and brands.</p>
-    <div id="uc-b" style="display:none;margin-top:14px;padding:14px;background:var(--surface-2);border-radius:8px">
-      <div class="filters" style="margin-bottom:10px"><span class="fchip active">Portfolio</span><span class="fchip">Dow Jones only</span><span class="fchip">Realtor only</span></div>
-      <table style="font-size:11.5px"><thead><tr><th>Untargeted key-value</th><th>DJ reach</th><th>Realtor reach</th><th>Min-size gate</th></tr></thead><tbody>
-        <tr><td class="idc">kv:executive</td><td>412K</td><td>188K</td><td><span class="tag ok">Passed</span></td></tr>
-        <tr><td class="idc">intent:auto_luxury</td><td>—</td><td>640K</td><td><span class="tag ok">Passed</span></td></tr>
-        <tr><td class="idc">kv:niche_hobby_x</td><td>2.1K</td><td>340</td><td><span class="tag bad">Suppressed — below threshold</span></td></tr>
-      </tbody></table>
-      <div class="hint">No BU-specific raw data in the output. Source and window stated on every figure.</div>
-    </div>
+    <div class="card-h"><div><div class="kick">UC-D · Priority · Leads Custody</div><h4>Planning Export</h4></div></div>
+    <div class="arow"><span class="k">Export name</span><span class="v mono">Q4_Cross_Property_Audience_Plan</span></div>
+    <div class="arow"><span class="k">Properties</span><span class="v">Dow Jones, Realtor</span></div>
+    <div class="arow"><span class="k">Selected audience</span><span class="v mono">4,250,000 users</span></div>
+    <div class="arow"><span class="k">Format</span><span class="v">CSV</span></div>
+    <div class="arow"><span class="k">Destination</span><span class="v">Activation workspace</span></div>
+    <div class="arow"><span class="k">Status</span><span class="tag ok">Ready to activate</span></div>
+    <div style="margin-top:12px"><button class="btn" onclick="go('v-activation');setTimeout(()=>{const el=document.getElementById('planning-export-card');if(el)el.scrollIntoView({behavior:'smooth',block:'center'});},60)">Open Activation →</button></div>
   </div>`;
 };
 
@@ -2170,10 +2387,121 @@ function sendAI(){const i=document.getElementById('aiInput');if(!i.value.trim())
 document.getElementById('aiInput').addEventListener('keydown',e=>{if(e.key==='Enter')sendAI();});
 document.getElementById('globalSearch').addEventListener('keydown',e=>{if(e.key==='Enter'){searchAndOpen(e.target.value);}});
 
-/* ---- theme ---- */
-function toggleTheme(){
-  const root = document.documentElement;
-  root.dataset.theme = root.dataset.theme === 'light' ? 'dark' : 'light';
+/* ---- appearance ---- */
+const THEMES = [
+  {key:'black-on-light', name:'Black on Light', bg:'#F6F7F9', card:'#FFFFFF', text:'#111111', accent:'#2563EB'},
+  {key:'dark',           name:'Dark',            bg:'#0B0F14', card:'#151B23', text:'#F8FAFC', accent:'#60A5FA'},
+  {key:'newsroom-navy',  name:'Newsroom Navy',    bg:'#EEF2F7', card:'#FFFFFF', text:'#10233F', accent:'#174A7E'},
+  {key:'ocean-blue',     name:'Ocean Blue',       bg:'#EFF6FF', card:'#FFFFFF', text:'#172033', accent:'#0072CE'},
+  {key:'slate',          name:'Slate',            bg:'#E9EEF3', card:'#F8FAFC', text:'#172033', accent:'#315A7D'},
+  {key:'emerald-data',   name:'Emerald Data',     bg:'#EFF8F3', card:'#FFFFFF', text:'#10251A', accent:'#087F5B'},
+  {key:'purple-intelligence', name:'Purple Intelligence', bg:'#F5F1FF', card:'#FFFFFF', text:'#211638', accent:'#6D4AFF'},
+  {key:'warm-light',     name:'Warm Light',       bg:'#F7F4EE', card:'#FFFEFB', text:'#1F1D1A', accent:'#9A4D22'},
+  {key:'graphite',       name:'Graphite',         bg:'#20242B', card:'#2A3039', text:'#F5F7FA', accent:'#5CC8FF'},
+  {key:'high-contrast',  name:'High Contrast',    bg:'#FFFFFF', card:'#FFFFFF', text:'#000000', accent:'#0047FF'}
+];
+const FONT_STACKS = {
+  inter:  `Inter,"IBM Plex Sans","Source Sans 3",Roboto,"Segoe UI",Arial,sans-serif`,
+  plex:   `"IBM Plex Sans",Inter,Roboto,"Segoe UI",Arial,sans-serif`,
+  source: `"Source Sans 3",Inter,Roboto,"Segoe UI",Arial,sans-serif`,
+  roboto: `Roboto,Inter,"Segoe UI",Arial,sans-serif`,
+  segoe:  `"Segoe UI",Inter,Roboto,Arial,sans-serif`,
+  system: `system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif`
+};
+const APPEARANCE_DEFAULTS = { theme:'black-on-light', font:'inter', fontsize:'medium', density:'comfortable', highContrast:false, reduceMotion:false, prevTheme:null };
+let appearance = { ...APPEARANCE_DEFAULTS };
+
+function renderSwatches(){
+  const el = document.getElementById('themeSwatches');
+  if(!el) return;
+  el.innerHTML = THEMES.map(t => `
+    <button class="theme-swatch ${appearance.theme===t.key?'active':''}" title="${t.name}" onclick="setTheme('${t.key}')">
+      <span class="sw-bg" style="background:${t.bg}"></span>
+      <span class="sw-card" style="background:${t.card};border:1px solid rgba(0,0,0,.08)"></span>
+      <span class="sw-accent" style="background:${t.accent}"></span>
+      <span class="sw-text" style="background:${t.text}"></span>
+    </button>`).join('');
+}
+
+function setTheme(key){
+  appearance.theme = key;
+  appearance.highContrast = (key === 'high-contrast');
+  document.documentElement.dataset.theme = key;
+  document.getElementById('hcToggle').checked = appearance.highContrast;
+  saveAppearance();
+  renderSwatches();
+}
+
+function setFont(key){
+  appearance.font = key;
+  document.documentElement.style.setProperty('--font-main', FONT_STACKS[key] || FONT_STACKS.inter);
+  saveAppearance();
+}
+
+function setFontSize(v){
+  appearance.fontsize = v;
+  document.documentElement.dataset.fontsize = v;
+  document.querySelectorAll('#fontSizePills button').forEach(b=>b.classList.toggle('active', b.dataset.v===v));
+  saveAppearance();
+}
+
+function setDensity(v){
+  appearance.density = v;
+  document.documentElement.dataset.density = v;
+  document.querySelectorAll('#densityPills button').forEach(b=>b.classList.toggle('active', b.dataset.v===v));
+  saveAppearance();
+}
+
+function toggleHighContrast(on){
+  if(on){
+    appearance.prevTheme = appearance.theme !== 'high-contrast' ? appearance.theme : appearance.prevTheme;
+    setTheme('high-contrast');
+  } else {
+    setTheme(appearance.prevTheme || 'black-on-light');
+  }
+  renderSwatches();
+}
+
+function toggleReduceMotion(on){
+  appearance.reduceMotion = on;
+  document.documentElement.dataset.motion = on ? 'reduce' : 'normal';
+  saveAppearance();
+}
+
+function saveAppearance(){
+  try{ localStorage.setItem('nws_appearance', JSON.stringify(appearance)); }catch(e){}
+}
+
+function applyAppearance(){
+  document.documentElement.dataset.theme = appearance.theme;
+  document.documentElement.style.setProperty('--font-main', FONT_STACKS[appearance.font] || FONT_STACKS.inter);
+  document.documentElement.dataset.fontsize = appearance.fontsize;
+  document.documentElement.dataset.density = appearance.density;
+  document.documentElement.dataset.motion = appearance.reduceMotion ? 'reduce' : 'normal';
+  const fontSel = document.getElementById('fontSel'); if(fontSel) fontSel.value = appearance.font;
+  const hc = document.getElementById('hcToggle'); if(hc) hc.checked = appearance.highContrast;
+  const mo = document.getElementById('motionToggle'); if(mo) mo.checked = appearance.reduceMotion;
+  document.querySelectorAll('#fontSizePills button').forEach(b=>b.classList.toggle('active', b.dataset.v===appearance.fontsize));
+  document.querySelectorAll('#densityPills button').forEach(b=>b.classList.toggle('active', b.dataset.v===appearance.density));
+  renderSwatches();
+}
+
+function resetAppearance(){
+  appearance = { ...APPEARANCE_DEFAULTS };
+  try{ localStorage.removeItem('nws_appearance'); }catch(e){}
+  applyAppearance();
+}
+
+function loadAppearance(){
+  try{
+    const saved = localStorage.getItem('nws_appearance');
+    if(saved) appearance = { ...APPEARANCE_DEFAULTS, ...JSON.parse(saved) };
+  }catch(e){}
+  applyAppearance();
+}
+
+function toggleAppearance(){
+  document.getElementById('appearancePanel').classList.toggle('show');
 }
 
 /* ---- notifications ---- */
@@ -2181,11 +2509,12 @@ function toggleNotifs(){
   document.getElementById('notifPanel').classList.toggle('show');
 }
 document.addEventListener('click', e=>{
-  const wrap = document.querySelector('.notif-wrap');
-  const panel = document.getElementById('notifPanel');
-  if(panel && panel.classList.contains('show') && wrap && !wrap.contains(e.target)){
-    panel.classList.remove('show');
-  }
+  document.querySelectorAll('.notif-wrap').forEach(wrap=>{
+    const panel = wrap.querySelector('.notif-panel');
+    if(panel && panel.classList.contains('show') && !wrap.contains(e.target)){
+      panel.classList.remove('show');
+    }
+  });
 });
 
 /* ---- boot ---- */
@@ -2195,10 +2524,9 @@ document.addEventListener('keydown', e=>{
   }
 });
 
-document.documentElement.dataset.theme = 'dark';
+loadAppearance();
 go('v-search');
 
 </script>
 </body>
 </html>
-
