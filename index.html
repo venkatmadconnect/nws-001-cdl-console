@@ -857,6 +857,58 @@ const CUSTOMERS = {
       ['Jan 5','DO_NOT_SELL flag checked — not set, page retained'],
       ['Jan 2','First property search — Austin, TX metro']
     ]
+  },
+
+  /* ---- Cross-BU match — rare, by design ----
+     The requirements doc lists "the verified deterministic overlap between the
+     two POC business units" as an OPEN QUESTION, not a solved fact — quoted
+     figures (25% / 30%+ / ~4.4% at tag layer) are unverified and withheld
+     externally. This record is a worked example of what a confirmed cross-BU
+     match actually looks like when the licensed spine finds one — not a claim
+     that this is common. Realtor-side identifiers are the real ones captured
+     in a live browser session (HAR): permutive-id, __vst, Adobe ECID (s_ecid),
+     Prebid TDID, LiveRamp Panorama, TransUnion tluid. */
+  cross_bu: {
+    initials:'JC', name:'Jamie Chen', master:'Licensed spine · union match', loyalty:'Cross-BU · rare',
+    home:'Dow Jones + Realtor.com', updated:'Aug 8 partition', quality:91,
+    tags:[['us','Confirmed cross-BU'],['warn','Rare — not the general case'],['mute','Union match, deterministic']],
+    attrs:{
+      'Dow Jones (DEMOGRAPHIC_LOOKUP)':[
+        ['JOB_TITLE','SVP, Finance','Dow Jones','c3'],
+        ['NET_WORTH_RANGE','$1M–$5M','Dow Jones','c2'],
+        ['ACCREDITED_INVESTOR','1 (true)','Dow Jones','c2']
+      ],
+      'Realtor.com (real, HAR-captured)':[
+        ['property_search','active · last 7d','Realtor','c1'],
+        ['price_band','$1.2M–$2M','Realtor','c1'],
+        ['market','Austin, TX metro','Realtor','c1']
+      ]
+    },
+    identifiers:[
+      ['VXID (Dow Jones)','vxid','a7f3-91c2 (hashed)','100','deterministic','var(--us)'],
+      ['News ID (Dow Jones)','newsid','nid_a7f3…','98.4','deterministic','var(--au)'],
+      ['permutive-id (Realtor)','puid','fe21ac28-618b-4785-b8e7-52c40a25ac08','100','deterministic','var(--uk)'],
+      ['__vst (Realtor)','vst','6aa48129-edfc-4519-97c2-346396a0b38e','100','deterministic','var(--us)'],
+      ['Adobe ECID (Realtor)','ecid','27749829667198561830671535615857738087','96.0','deterministic','var(--eu)'],
+      ['login_id + email_sha256 (Realtor)','login','53d7341e… + d037d5f8…','100','deterministic','var(--us)'],
+      ['TDID — Prebid/TTD (Realtor)','tdid','2a1cee32-b168-42f2-a881-18913b74a383','82.0','probabilistic','var(--warn)'],
+      ['Panorama ID — LiveRamp (Realtor)','panorama','(cookieless, hashed)','74.0','probabilistic','var(--danger)'],
+      ['tluid — TransUnion (Realtor)','tluid','(session-scoped)','80.0','probabilistic','var(--danger)']
+    ],
+    segments:[['C-suite decision-makers','rt'],['In-market movers','rt'],['HNW households','bt']],
+    lineage:[
+      ['SF','Dow Jones · Snowflake DEMOGRAPHIC_LOOKUP','VXID-keyed row','ok','Primary · DJ'],
+      ['PMV-DJ','Permutive (DJ workspace)','wraps VXID + News ID','ok','Matched · DJ'],
+      ['PMV-RE','Permutive (Realtor workspace)','identify call: login_id + email_sha256 → user_id fe21ac28…, real HAR capture','ok','Matched · Realtor'],
+      ['SPINE','Licensed spine — union match','resolves DJ VXID ↔ Realtor permutive-id as one person','warn','Cross-BU — rare'],
+      ['ADB','Adobe Experience Cloud (Realtor)','ECID confirmed live via s_ecid cookie + adobe_id alias','ok','Corroborating signal']
+    ],
+    timeline:[
+      ['Aug 8, 11:00 UTC','Realtor session starts anonymous — visitor_id + adobe_id + pxid only'],
+      ['Aug 8, 11:03 UTC','User logs in — Permutive identify upgrades to login_id + email_sha256 at priority 0'],
+      ['Aug 8, 14:20 UTC','Licensed spine resolves this email hash against Dow Jones VXID a7f3-91c2 — union match'],
+      ['Flag','This union match is the exception, not the rule — portfolio-wide overlap is still an open, unverified question per the requirements doc']
+    ]
   }
 };
 
@@ -924,6 +976,12 @@ views['v-search'] = () => `
       <button class="chip" onclick="openProfile('realtor')">Realtor.com overview</button>
       <button class="chip" onclick="openProfile('realtor_mover')">vst 8827-c31a</button>
       <button class="chip" onclick="openProfile('realtor_hnw')">vst 5f01-e9d2</button>
+    </div>
+  </div>
+  <div class="chip-group">
+    <div class="chip-group-label" style="color:var(--warn)">Cross-BU match — rare, not the general case</div>
+    <div class="chips">
+      <button class="chip" style="border-color:rgba(246,185,59,.4);color:var(--warn)" onclick="openProfile('cross_bu')">Jamie Chen · confirmed in both DJ + Realtor</button>
     </div>
   </div>
 
@@ -1047,6 +1105,38 @@ function openProfile(key){
   document.getElementById('mainScroll').scrollTo(0,0);
 }
 
+function findProfile(query){
+  const q = (query||'').trim().toLowerCase();
+  if(!q) return null;
+  for(const key in CUSTOMERS){
+    const c = CUSTOMERS[key];
+    if(key.toLowerCase().includes(q)) return key;
+    if(c.name && c.name.toLowerCase().includes(q)) return key;
+    if(c.master && c.master.toLowerCase().includes(q)) return key;
+    for(const id of (c.identifiers||[])){
+      // id = [label, ns, value, confidence, method, color]
+      if(id[2] && id[2].toLowerCase().includes(q)) return key;
+    }
+  }
+  return null;
+}
+
+function searchAndOpen(query){
+  const match = findProfile(query);
+  go('v-search');
+  if(match){
+    openProfile(match);
+  } else {
+    state.customer = null;
+    renderProfile();
+    document.getElementById('mainScroll').scrollTo(0,0);
+    // surface a not-found note without wiping the page
+    const el = document.getElementById('profArea');
+    if(el) el.insertAdjacentHTML('afterbegin',
+      `<div class="hint" style="margin-bottom:12px;color:var(--warn)">No profile matched "${query.replace(/</g,'')}" — try a name (e.g. Jamie Chen) or an identifier (VXID, vst, permutive-id…).</div>`);
+  }
+}
+
 /* ---- Identity Graph (full) ---- */
 views['v-graph'] = () => {
   const c = state.customer ? CUSTOMERS[state.customer] : CUSTOMERS.dj;
@@ -1072,6 +1162,7 @@ views['v-graph'] = () => {
   <div class="ph"><div><div class="kick">Identity · Graph</div><h1>Identity graph — ${c.name}</h1>
   <p>Identifiers resolved against the <b>licensed spine</b> — the layer builds none of its own. Each link is labelled Matched (deterministic) or Modelled, and the label travels with any audience built from it.</p></div>
   <a class="btn ghost" href="#" onclick="go('v-search');return false">← Back to profile</a></div>
+  ${state.customer==='cross_bu' ? `<div class="note lock" style="margin-bottom:14px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z"/></svg><span><b>This is a rare confirmed match, not the general case.</b> The verified deterministic overlap between Dow Jones and Realtor.com is still an open, unresolved question in the requirements doc — quoted figures (25% / 30%+ / ~4.4% at tag layer) are unverified and never quoted externally. This graph shows what one confirmed union match looks like when the licensed spine finds one.</span></div>` : ''}
   <div class="grid g-2-3">
     <div class="card" style="display:flex;align-items:center;justify-content:center;min-height:400px">
       <svg width="420" height="380" viewBox="0 0 420 380">
@@ -1685,7 +1776,7 @@ function askAI(q){
 }
 function sendAI(){const i=document.getElementById('aiInput');if(!i.value.trim())return;askAI(i.value.trim());i.value='';}
 document.getElementById('aiInput').addEventListener('keydown',e=>{if(e.key==='Enter')sendAI();});
-document.getElementById('globalSearch').addEventListener('keydown',e=>{if(e.key==='Enter'){go('v-search');openProfile('dj');}});
+document.getElementById('globalSearch').addEventListener('keydown',e=>{if(e.key==='Enter'){searchAndOpen(e.target.value);}});
 
 /* ---- theme ---- */
 function toggleTheme(){
@@ -1694,6 +1785,12 @@ function toggleTheme(){
 }
 
 /* ---- boot ---- */
+document.addEventListener('keydown', e=>{
+  if(e.target && e.target.id === 'profSearch' && e.key === 'Enter'){
+    searchAndOpen(e.target.value);
+  }
+});
+
 document.documentElement.dataset.theme = 'dark';
 go('v-search');
 
