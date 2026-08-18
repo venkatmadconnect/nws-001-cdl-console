@@ -2292,9 +2292,7 @@ views['v-planning'] = () => `
 /* ---- ICL — Live Platform. Real embed + real platform-wide connector catalog.
    No credentials are stored here — this is a public static file, so the
    iframe requires a fresh manual sign-in each time. Okta SSO is planned
-   but not yet built. This catalog is platform-wide across all MadConnect
-   clients (not News-Corp-scoped) — today's Aug 18 standup flagged this
-   exact list as "not useful for current implementation needs" for NWS-001. */
+   but not yet built. */
 views['v-icllive'] = () => {
   const catalog = [
     ['Amazon Ads','Audiences','audience','DESTINATION'],['Amazon Ads','Audiences - Data Manager','audience','DESTINATION'],
