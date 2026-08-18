@@ -1248,65 +1248,159 @@ function canManage(ownerBU){
 /* ============================================================
    VIEW TEMPLATES
    ============================================================ */
+/* ---- Lightweight chart helpers (no external library — self-contained file) ---- */
+function makeDonut(slices, size){
+  size = size || 120;
+  const r = size/2 - 14, cx = size/2, cy = size/2, C = 2*Math.PI*r;
+  const total = slices.reduce((s,x)=>s+x[0],0) || 1;
+  let cum = 0;
+  const circles = slices.map(([val,color])=>{
+    const pct = val/total;
+    const dash = pct*C;
+    const offset = -cum*C;
+    cum += pct;
+    return `<circle r="${r}" cx="${cx}" cy="${cy}" fill="none" stroke="${color}" stroke-width="15" stroke-dasharray="${dash.toFixed(1)} ${(C-dash).toFixed(1)}" stroke-dashoffset="${offset.toFixed(1)}" transform="rotate(-90 ${cx} ${cy})"/>`;
+  }).join('');
+  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" style="flex-shrink:0">${circles}</svg>`;
+}
+function makeBars(items){
+  const max = Math.max(...items.map(i=>i[1])) || 1;
+  return items.map(([label,val,disp])=>`
+    <div style="margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;font-size:11.5px;margin-bottom:4px"><span>${label}</span><span class="mono">${disp}</span></div>
+      <div style="height:8px;background:var(--surface-3);border-radius:4px;overflow:hidden"><div style="width:${(val/max*100).toFixed(0)}%;height:100%;background:var(--primary)"></div></div>
+    </div>`).join('');
+}
+function makeTimeline(events){
+  return `<div style="display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:6px 0">
+    ${events.map(([d,l],i)=>`
+      <div style="flex:1;min-width:130px;text-align:center;position:relative">
+        ${i>0?'<div style="position:absolute;top:5px;left:-50%;width:100%;height:2px;background:var(--border)"></div>':''}
+        <div style="width:10px;height:10px;border-radius:50%;background:var(--primary);margin:0 auto 8px;position:relative;z-index:1"></div>
+        <div class="mono" style="font-size:10px;color:var(--text-faint)">${d}</div>
+        <div style="font-size:11px;margin-top:2px">${l}</div>
+      </div>`).join('')}
+  </div>`;
+}
+
 const views = {};
 
 /* ---- Dashboard (landing page) — per Mugdha's Aug 18 standup recommendation.
-   Every number here is real (traceable elsewhere in this console) or
-   explicitly marked illustrative/unverified — no invented vanity metrics. */
-views['v-dashboard'] = () => `
+   Same visual shape as the reference screenshots (metric tiles, top-segments
+   bars, activation/identity donuts, a trend strip) but every number is real
+   and traceable elsewhere in this console, or explicitly marked as a sample/
+   unverified — no invented vanity metrics like the reference decks have. */
+views['v-dashboard'] = () => {
+  const segBars = makeBars([
+    ['High-net-worth households (Realtor)', 1100000, '1.1M'],
+    ['In-market · luxury auto (Realtor)', 640000, '640K'],
+    ['C-suite decision-makers (DJ)', 412000, '412K'],
+    ['Small-business owners (DJ)', 288000, '288K'],
+    ['C-suite decision-makers (Realtor)', 188000, '188K']
+  ]);
+  const activationDonut = makeDonut([
+    [2, 'var(--success)'],
+    [1, 'var(--primary)'],
+    [1, 'var(--warn)']
+  ], 130);
+  const identityDonut = makeDonut([
+    [82.65, 'var(--success)'],
+    [17.35, 'var(--surface-3)']
+  ], 130);
+  const connectorDonut = makeDonut([
+    [13, 'var(--success)'],
+    [2, 'var(--warn)'],
+    [1, 'var(--danger)']
+  ], 130);
+  const timeline = makeTimeline([
+    ['Jul 15', 'Realtor package validated'],
+    ['Aug 8', 'Live login-upgrade captured (HAR)'],
+    ['Aug 11', 'Realtor data dictionary handed off'],
+    ['Aug 18', 'Dashboard + Prepare Segments added']
+  ]);
+
+  return `
   <div class="ph"><div><div class="kick">Home · Landing</div><h1>Dashboard</h1>
-  <p>NWS-001 CDL POC — Dow Jones + Realtor.com. Real numbers only; anything not yet verified is labelled, not smoothed over.</p></div></div>
+  <p>NWS-001 CDL POC — Dow Jones + Realtor.com. Every number below is real and traceable elsewhere in this console, or explicitly marked as a sample.</p></div></div>
 
   <div class="grid g-3" style="margin-bottom:14px">
     <div class="card">
-      <div class="kick" style="font-size:9px;color:var(--text-faint)">CONNECTORS</div>
-      <div class="display" style="font-size:30px;font-weight:700;margin:4px 0">16</div>
-      <div style="font-size:11.5px;color:var(--text-soft)">13 live · 2 in progress · 1 blocked</div>
+      <div class="kick" style="font-size:9px;color:var(--text-faint)">SAMPLED GAM REQUESTS</div>
+      <div class="display" style="font-size:26px;font-weight:700;margin:4px 0">492,245</div>
+      <div style="font-size:11px;color:var(--text-soft)">Real, Realtor, Jan 5 partition</div>
     </div>
     <div class="card">
-      <div class="kick" style="font-size:9px;color:var(--text-faint)">CANONICAL DEFINITIONS</div>
-      <div class="display" style="font-size:30px;font-weight:700;margin:4px 0">4</div>
-      <div style="font-size:11.5px;color:var(--text-soft)">Active or Insights-only, versioned</div>
+      <div class="kick" style="font-size:9px;color:var(--text-faint)">CLICKSTREAM SAMPLE ROWS</div>
+      <div class="display" style="font-size:26px;font-weight:700;margin:4px 0">3.8M</div>
+      <div style="font-size:11px;color:var(--text-soft)">Real, 1/256 sample, Jan 4–12</div>
     </div>
     <div class="card">
-      <div class="kick" style="font-size:9px;color:var(--text-faint)">POC BUSINESS UNITS</div>
-      <div class="display" style="font-size:30px;font-weight:700;margin:4px 0">2</div>
-      <div style="font-size:11.5px;color:var(--text-soft)">Dow Jones, Realtor.com</div>
+      <div class="kick" style="font-size:9px;color:var(--text-faint)">ACTIVE DEFINITIONS</div>
+      <div class="display" style="font-size:26px;font-weight:700;margin:4px 0">4</div>
+      <div style="font-size:11px;color:var(--text-soft)">Real, versioned canonical segments</div>
     </div>
     <div class="card">
-      <div class="kick" style="font-size:9px;color:var(--text-faint)">IDENTITY MATCH RATE</div>
-      <div class="display" style="font-size:30px;font-weight:700;margin:4px 0;color:var(--success)">82.65%</div>
-      <div style="font-size:11.5px;color:var(--text-soft)">Real, GAM↔clickstream, UTC-7</div>
+      <div class="kick" style="font-size:9px;color:var(--text-faint)">LARGEST SEGMENT</div>
+      <div class="display" style="font-size:26px;font-weight:700;margin:4px 0">1.1M</div>
+      <div style="font-size:11px;color:var(--text-soft)">HNW households, Realtor, real</div>
+    </div>
+    <div class="card">
+      <div class="kick" style="font-size:9px;color:var(--text-faint)">ACTIVATION PUSHES</div>
+      <div class="display" style="font-size:26px;font-weight:700;margin:4px 0">4</div>
+      <div style="font-size:11px;color:var(--text-soft)">Real, logged on Activation screen</div>
     </div>
     <div class="card">
       <div class="kick" style="font-size:9px;color:var(--text-faint)">DO_NOT_SELL SUPPRESSED</div>
-      <div class="display" style="font-size:30px;font-weight:700;margin:4px 0">22,267</div>
-      <div style="font-size:11.5px;color:var(--text-soft)">of 426,541 pages, real, Jan 5</div>
-    </div>
-    <div class="card">
-      <div class="kick" style="font-size:9px;color:var(--text-faint)">DSAR TICKETS OPEN</div>
-      <div class="display" style="font-size:30px;font-weight:700;margin:4px 0;color:var(--warn)">1 of 3</div>
-      <div style="font-size:11.5px;color:var(--text-soft)">1 stalled — Xandr confirmation missing</div>
+      <div class="display" style="font-size:26px;font-weight:700;margin:4px 0">22,267</div>
+      <div style="font-size:11px;color:var(--text-soft)">Real, of 426,541 pages, Jan 5</div>
     </div>
   </div>
 
   <div class="grid g-2-3" style="margin-bottom:14px">
     <div class="card">
-      <div class="card-h"><div><div class="kick">Definitions</div><h4>Top canonical definitions</h4></div><a class="link" href="#" onclick="go('v-segments');return false">Open →</a></div>
-      <div class="arow"><span class="k">C-suite decision-makers</span><span class="v mono">412K DJ · 188K Realtor</span></div>
-      <div class="arow"><span class="k">High-net-worth households</span><span class="v mono">96K DJ · 1.1M Realtor</span></div>
-      <div class="arow"><span class="k">In-market · luxury auto</span><span class="v mono">— · 640K Realtor</span></div>
-      <div class="arow"><span class="k">Small-business owners</span><span class="v mono">288K DJ · 72K Realtor</span></div>
-      <div class="hint">Sizes are real per-BU figures from the Audience Definitions screen.</div>
+      <div class="card-h"><div><div class="kick">Segments</div><h4>Top canonical definitions, by size</h4></div><a class="link" href="#" onclick="go('v-segments');return false">Open →</a></div>
+      ${segBars}
+      <div class="hint">Real per-BU sizes from the Audience Definitions screen. Bars scaled to the largest.</div>
     </div>
     <div class="card">
-      <div class="card-h"><div><div class="kick">Identity</div><h4>Resolution &amp; unification</h4></div></div>
-      <div class="arow"><span class="k">Same-country cross-BU match (DJ + Realtor)</span><span class="tag ok">Common — expected</span></div>
-      <div class="arow"><span class="k">Cross-region match (US ↔ Australia)</span><span class="tag bad">Blocked — Phase 2 only</span></div>
-      <div class="arow"><span class="k">Realized yield on existing DJ↔Realtor barter</span><span class="tag warn">0.0–0.2%</span></div>
-      <div class="arow"><span class="k">Verified deterministic overlap, both BUs</span><span class="tag mute">Unverified — open question</span></div>
-      <div class="hint">No invented "unified profile count" here — the requirements doc lists portfolio overlap as unresolved, so this dashboard doesn't pretend otherwise.</div>
+      <div class="card-h"><div><div class="kick">Activation</div><h4>Recent pushes by outcome</h4></div></div>
+      <div style="display:flex;align-items:center;gap:20px">
+        ${activationDonut}
+        <div style="flex:1">
+          <div class="arow"><span class="k"><span class="dot ok"></span> Delivered</span><span class="v mono">2</span></div>
+          <div class="arow"><span class="k"><span class="dot" style="background:var(--primary)"></span> Federated</span><span class="v mono">1</span></div>
+          <div class="arow"><span class="k"><span class="dot warn"></span> Not activatable</span><span class="v mono">1</span></div>
+        </div>
+      </div>
+      <div class="hint">Real, from the 4 logged rows on the Activation screen.</div>
     </div>
+  </div>
+
+  <div class="grid g-3" style="margin-bottom:14px">
+    <div class="card" style="text-align:center">
+      <div class="kick" style="font-size:9px;color:var(--text-faint);text-align:left">IDENTITY MATCH</div>
+      <div style="display:flex;justify-content:center;margin:8px 0">${identityDonut}</div>
+      <div style="font-size:20px;font-weight:700;color:var(--success)">82.65%</div>
+      <div style="font-size:11px;color:var(--text-soft)">Real, GAM↔clickstream, UTC-7</div>
+    </div>
+    <div class="card" style="text-align:center">
+      <div class="kick" style="font-size:9px;color:var(--text-faint);text-align:left">CONNECTOR HEALTH</div>
+      <div style="display:flex;justify-content:center;margin:8px 0">${connectorDonut}</div>
+      <div style="font-size:20px;font-weight:700">13 / 16</div>
+      <div style="font-size:11px;color:var(--text-soft)">Live · 2 in progress · 1 blocked</div>
+    </div>
+    <div class="card" style="text-align:center">
+      <div class="kick" style="font-size:9px;color:var(--text-faint);text-align:left">CROSS-BU OVERLAP</div>
+      <div style="display:flex;align-items:center;justify-content:center;height:130px">
+        <span class="tag mute" style="font-size:13px;padding:8px 14px">Unverified</span>
+      </div>
+      <div style="font-size:11px;color:var(--text-soft)">Open question per requirements doc — never quote a % externally</div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:14px">
+    <div class="card-h"><div><div class="kick">Timeline</div><h4>Recent real activity</h4></div></div>
+    ${timeline}
   </div>
 
   <div class="card">
@@ -1315,6 +1409,7 @@ views['v-dashboard'] = () => `
     <div class="arow"><span class="k">Katie Le Ruez controllership determination</span><span class="tag bad">Blocking consent foundation</span></div>
     <div class="arow"><span class="k">CES showcase</span><span class="tag ok">January 2027</span></div>
   </div>`;
+};
 
 /* ---- Profile Search ---- */
 views['v-search'] = () => `
