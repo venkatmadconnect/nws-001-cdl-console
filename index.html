@@ -2353,8 +2353,15 @@ views['v-icllive'] = () => {
   </div>
 
   <div class="card" style="margin-bottom:14px">
-    <div class="card-h"><div><div class="kick">Live embed</div><h4>dev-nova-app.madconnect.io</h4></div><span class="tag bad">Requires your login</span></div>
-    <iframe src="https://dev-nova-app.madconnect.io/signin?embed=true" width="100%" height="650" frameborder="0" title="MadConnect ICL" style="border:1px solid var(--border);border-radius:10px;display:block"></iframe>
+    <div class="card-h"><div><div class="kick">Live embed</div><h4>dev-nova-app.madconnect.io</h4></div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <a href="https://dev-nova-app.madconnect.io/signin?embed=true" target="_blank" rel="noopener" class="btn ghost" style="padding:6px 12px;font-size:11px;text-decoration:none">Open full view ↗</a>
+        <button class="btn ghost" style="padding:6px 12px;font-size:11px" id="iclExpandBtn" onclick="const f=document.getElementById('iclFrame');const big=f.style.height==='1000px';f.style.height=big?'650px':'1000px';document.getElementById('iclExpandBtn').textContent=big?'Expand':'Collapse';">Expand</button>
+        <span class="tag bad">Requires your login</span>
+      </div>
+    </div>
+    <iframe id="iclFrame" src="https://dev-nova-app.madconnect.io/signin?embed=true" width="100%" height="650" frameborder="0" title="MadConnect ICL" style="border:1px solid var(--border);border-radius:10px;display:block;transition:height .2s"></iframe>
+    <div class="hint">"Open full view" launches the real page in its own browser tab — your browser's own saved password (if you let it remember one) will autofill there, safely, on your machine only.</div>
   </div>
 
   <div class="card">
