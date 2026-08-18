@@ -738,7 +738,6 @@
       <div class="g-label">Activate — what leaves</div>
       <button class="nav-item" data-t="v-activation"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>Activation</button>
       <button class="nav-item" data-t="v-planningexport"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>Planning Export</button>
-      <button class="nav-item" data-t="v-connectors"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 2l4 4-4 4M3 11V9a4 4 0 014-4h14M7 22l-4-4 4-4M21 13v2a4 4 0 01-4 4H3"/></svg>ICL Connectors</button>
       <button class="nav-item" data-t="v-planning"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>MCP Endpoints</button>
       <button class="nav-item" data-t="v-icllive"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M3 9h18M8 4v5"/></svg>ICL — Live Platform<span class="count" style="background:var(--danger-soft);color:var(--danger)">real</span></button>
     </div>
@@ -2247,46 +2246,9 @@ views['v-catalog'] = () => `
     <div class="hint">Timezone alignment was the dominant variable (14.99% at UTC-6, 8.58% at UTC-8) — now solved and documented. Primary↔backfill has no reliable row-level join (706 of 154.3M) — a hard limit, not a defect to fix.</div>
   </div>`;
 
-/* ---- ICL Connectors ---- */
-views['v-connectors'] = () => {
-  const conns = [
-    ['GAM','Live · Secure Signals','ok'],['Permutive','Live · no API, batch','warn'],['Snowflake','Live · B2C_AUDIENCE_GOLD','ok'],
-    ['Atlan','Live · DJ catalog sync','ok'],['Acryl / DataHub','Live · Realtor Snowflake','ok'],['AWS Glue/Athena','Live · Realtor GAM logs','ok'],
-    ['AWS S3','Live · rdc-media-public','ok'],['LiveRamp','Placeholder spine · Experian rejected, not tag-live','warn'],['The Trade Desk','In progress · UID2.0','warn'],
-    ['Xandr Curate','Live · AAMP connector','ok'],['MS Curate','Live · AAMP connector','ok'],['InfoSum Beacon','Live · federated (WPP)','ok'],
-    ['Google DV360','Certified buyer','ok'],['Yahoo DSP','Certified buyer','ok'],['DJCMP (Consent MW)','Live · consent sync','ok'],['MadConnect AWS grant','Blocked · no account ID','bad']
-  ];
-  return `
-  <div class="ph"><div><div class="kick">Data · Connectivity</div><h1>ICL connectors — real stack</h1>
-  <p>Dow Jones and Realtor.com's actual systems, reachable through MadConnect's Intelligent Connectivity Layer. One connection, zero-copy movement — data never leaves the BU's environment.</p></div>
-  <button class="btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>Add connector</button></div>
-
-  <div class="card" style="margin-bottom:16px">
-    <div class="card-h"><div><div class="kick">Architecture</div><h4>Where each BU's data actually lives</h4></div></div>
-    <div class="flowrail" style="padding-bottom:4px">
-      ${[['Dow Jones','Snowflake B2C_AUDIENCE_GOLD → Atlan catalog'],['↳ GAM','Secure Signals · PPID, hashed email, segments'],['↳ Permutive','wraps VXID+NewsID · no API, batch write'],
-         ['Realtor.com','S3 rdc-media-public + Snowflake → Acryl'],['↳ GAM','networkimpressions/requests + backfill, Glue/Athena'],['↳ Permutive','vst → visitor_id → puid, live join']]
-        .map(([a,b])=>`<div class="fstage" style="min-width:150px"><h5 style="font-size:12.5px">${a}</h5><p style="font-size:11px">${b}</p></div>`).join('')}
-    </div>
-    <div class="hint">The ICL sits above both stacks — it never centralizes DJ's Snowflake data or Realtor's S3 objects; it reads, resolves and pushes zero-copy.</div>
-  </div>
-
-  <div class="grid g-3" style="margin-bottom:16px">
-    <div class="card"><div class="kick" style="font-family:'JetBrains Mono';font-size:9px;color:var(--text-faint)">CONNECTED</div><div class="display" style="font-size:26px;font-weight:700;margin-top:4px">13 / 16</div><div style="font-size:12px;color:var(--text-soft)">live systems</div></div>
-    <div class="card"><div class="kick" style="font-family:'JetBrains Mono';font-size:9px;color:var(--text-faint)">MOVEMENT</div><div class="display" style="font-size:26px;font-weight:700;margin-top:4px;color:var(--success)">Zero-copy</div><div style="font-size:12px;color:var(--text-soft)">no data leaves estate</div></div>
-    <div class="card"><div class="kick" style="font-family:'JetBrains Mono';font-size:9px;color:var(--text-faint)">BLOCKING</div><div class="display" style="font-size:26px;font-weight:700;margin-top:4px;color:var(--danger)">1</div><div style="font-size:12px;color:var(--text-soft)">MadConnect AWS account ID</div></div>
-  </div>
-  <div class="conn-grid">
-    ${conns.map(([n,s,st])=>`<div class="conn"><div class="ci">${n[0]}</div><div><div class="cn">${n}</div><div class="cs"><span class="dot ${st}"></span>${s}</div></div></div>`).join('')}
-  </div>
-  <div class="note info" style="margin-top:12px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg><span>MCP endpoint and agentic buyer counterparties live on <a class="link" href="#" onclick="go('v-planning');return false">MCP Endpoints →</a>, not here — this screen is just the system/vendor connector map.</span></div>
-  <div class="hint" style="margin-top:12px">Permutive has no API — every activation to it is a storage write that Permutive ingests on its own schedule, not a real-time call. This is the batch leg that needs proving end-to-end.</div>`;
-};
-
-/* ---- Planning & Agentic Endpoint — UC-D + the MCP mechanism, under Activate ---- */
 views['v-planning'] = () => `
   <div class="ph"><div><div class="kick">Activate · What leaves</div><h1>MCP endpoints</h1>
-  <p>A governed answer to an agent's question — the agentic path that leaves the estate without a media buy attached. Lives here, under Activate → What Leaves, not inside the Planning Export card, not inside general Activation content, and not inside ICL Connectors.</p></div></div>
+  <p>A governed answer to an agent's question — the agentic path that leaves the estate without a media buy attached. Lives here, under Activate → What Leaves, not inside the Planning Export card or general Activation content.</p></div></div>
 
   <div class="card" style="margin-bottom:14px">
     <div class="card-h"><div><div class="kick">UC-F · Awaiting a decision</div><h4>Agentic endpoint</h4></div><span class="tag bad">Not yet approved</span></div>
@@ -2328,14 +2290,11 @@ views['v-planning'] = () => `
   </div>`;
 
 /* ---- ICL — Live Platform. Real embed + real platform-wide connector catalog.
-   Distinct from ICL Connectors (which is News-Corp-curated mock data) —
-   this screen is the actual MadConnect platform, unfiltered. Two honest
-   caveats live in the UI itself: (1) requires a real MadConnect login,
-   which will not show News-Corp-specific data since Snowflake/Permutive/
-   GAM access is still pending per the access sheet, and (2) this catalog
-   is platform-wide across all MadConnect clients, not News-Corp-specific
-   — today's Aug 18 standup notes say the team already flagged this exact
-   30-connector list as "not useful for current implementation needs." */
+   No credentials are stored here — this is a public static file, so the
+   iframe requires a fresh manual sign-in each time. Okta SSO is planned
+   but not yet built. This catalog is platform-wide across all MadConnect
+   clients (not News-Corp-scoped) — today's Aug 18 standup flagged this
+   exact list as "not useful for current implementation needs" for NWS-001. */
 views['v-icllive'] = () => {
   const catalog = [
     ['Amazon Ads','Audiences','audience','DESTINATION'],['Amazon Ads','Audiences - Data Manager','audience','DESTINATION'],
@@ -2382,15 +2341,20 @@ views['v-icllive'] = () => {
   const rows = catalog.map(([n,dt,adt,ty])=>`<tr><td>${n}</td><td>${dt}</td><td class="idc">${adt}</td><td><span class="tag ${ty==='SOURCE'?'mute':'ok'}">${ty}</span></td></tr>`).join('');
   return `
   <div class="ph"><div><div class="kick">Activate · Real, unfiltered</div><h1>ICL — live platform</h1>
-  <p>The actual MadConnect ICL, not a News-Corp-curated mock — platform-wide across all MadConnect clients, requiring a real login.</p></div></div>
+  <p>The actual MadConnect ICL, platform-wide, requiring a real login below.</p></div></div>
 
-  <div class="note lock" style="margin-bottom:14px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z"/></svg>
-  <span><b>Two things this will not show you.</b> First, it requires your real MadConnect login — sign in below with your own credentials. Second, even signed in, it won't show News-Corp-specific data: Snowflake, Permutive, and GAM access for this project are all still pending per the access sheet, so you're looking at the platform tenant, not a News Corp view. And the connector list below is platform-wide across every MadConnect client — today's standup notes say the team already flagged this exact 30-connector list as "not useful for current implementation needs" for NWS-001 specifically.</span></div>
+  <div class="card" style="margin-bottom:14px">
+    <div class="card-h"><div><div class="kick">Connection</div><h4>Sign-in status</h4></div>
+      <span class="tag mute" id="iclConnStatus">Not signed in</span></div>
+    <div class="arow"><span class="k">Auth method today</span><span class="v">Manual — sign in below with your MadConnect credentials</span></div>
+    <div class="arow"><span class="k">Auth method planned</span><span class="v">Okta SSO <span class="tag mute" style="margin-left:6px">Coming soon</span></span></div>
+    <button class="btn ghost" style="margin-top:10px" onclick="document.getElementById('iclConnStatus').outerHTML='<span class=\'tag ok\' id=\'iclConnStatus\'>Connected</span>'">Mark as signed in</button>
+    <div class="hint">A presentation toggle for demos, once you've actually signed into the embed below yourself — not real auth, and credentials are never stored in this file.</div>
+  </div>
 
   <div class="card" style="margin-bottom:14px">
     <div class="card-h"><div><div class="kick">Live embed</div><h4>dev-nova-app.madconnect.io</h4></div><span class="tag bad">Requires your login</span></div>
     <iframe src="https://dev-nova-app.madconnect.io/signin?embed=true" width="100%" height="650" frameborder="0" title="MadConnect ICL" style="border:1px solid var(--border);border-radius:10px;display:block"></iframe>
-    <div class="hint">Confirmed working by the team (Atharv, Aug 2026) — the <span class="mono">?embed=true</span> query param is the tested, supported way to render this inside another UI.</div>
   </div>
 
   <div class="card">
@@ -2398,7 +2362,6 @@ views['v-icllive'] = () => {
     <table style="font-size:11.5px"><thead><tr><th>Connector</th><th>Data type</th><th>Actual data type</th><th>Direction</th></tr></thead><tbody>
       ${rows}
     </tbody></table>
-    <div class="hint">Real, but not News-Corp-scoped — this is what the ICL platform supports across every MadConnect client today. Vendors already confirmed real for this project specifically (Google Ad Manager, Google DV360, Snowflake, Yahoo) do appear here, which corroborates the mocked ICL Connectors screen — the rest of this list is broader platform capability, not something News Corp is using.</div>
   </div>`;
 };
 
